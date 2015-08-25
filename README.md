@@ -200,8 +200,8 @@ Copy the template
     sudo cp ~/pharo-server-tools/init.d.template /etc/init.d/pharo-http-server
 
 Again, the script is more or less ready for our demo/tutorial.
-Check the variables at the top, you need to check the `user` in the `SU=` line
-to the actual user you are using.
+Check the variables at the top, you need to change the `user` in 
+the `PHDIR=` and `SU=` lines to the actual user you are using.
 
 If everything is well, Linux can now control your application.
 
