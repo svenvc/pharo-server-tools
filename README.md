@@ -22,8 +22,10 @@ Note that we assume that you operate your machine as a normal user.
 
     echo $USER
 
-Check out the project `pharo-server-tools` from github
+Check out the project `pharo-server-tools` from github.
+You will need to install git first
 
+    sudo apt-get install git 
     git clone https://github.com/svenvc/pharo-server-tools.git
 
 The following directory structure is used
@@ -35,8 +37,9 @@ The following directory structure is used
 
 The script `install-pharo.sh` will download a Pharo 4 image + VM
 and move things around to create the directory structure.
-This has to be done only once.
+This has to be done only once. You will need to install unzip.
 
+    sudo apt-get install unzip
     ~/pharo-server-tools/install-pharo.sh
 
 You can use both a 32 or 64 bit Ubuntu distribution.
@@ -47,7 +50,11 @@ The standard instructions are
 
     sudo dpkg --add-architecture i386
     sudo apt-get update
-    sudo apt-get install ia32-libs
+    sudo apt-get install libc6:i386
+    sudo apt-get install libssl1.0.0:i386
+    sudo apt-get install libfreetype6:i386
+
+You can use the script `ubuntu-32bit-support-on-64bit.sh` for this.
 
 
 ## Server Application
