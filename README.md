@@ -118,15 +118,13 @@ demo/tutorial, you will probably have to customise it. Copy it
 
 Here is the script’s contents:
 
-    (T3NonInteractiveTranscript onFileNamed: 'server-{1}.log') install.
+    (NeoConsoleTranscript onFileNamed: 'server-{1}.log') install.
 
     Transcript
       cr;
       show: 'Starting '; show: (NeoConsoleTelnetServer startOn: 42001); cr;
       show: 'Starting '; show: (NeoConsoleMetricDelegate startOn: 42002); cr;
       flush.
-
-    ZnLogEvent logToTranscript.
 
     (ZnServer defaultOn: 8080)
       logToTranscript;
