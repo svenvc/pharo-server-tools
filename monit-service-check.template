@@ -1,0 +1,7 @@
+check process pharo-http-server
+    with pidfile "/home/user/pharo/pharo-http-server/run-pharo-http-demo.pid"
+    start program = "/etc/init.d/pharo-http-server start"
+    stop program = "/etc/init.d/pharo-http-server stop"
+    if failed url http://localhost:42002/metrics/system.status
+       timeout 10 seconds retry 3
+       then restart 
