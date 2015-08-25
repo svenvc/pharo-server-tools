@@ -233,12 +233,17 @@ We chose to use monit for this purpose.
 Now copy over the template
 
     sudo cp ~/pharo-server-tools/monit-service-check.template /etc/monit/conf.d/pharo-http-server
+
+Edit the file by replace `user` with your username and restart monit, 
+after validating validating the syntax.
+
+    sudo service monit syntax
     sudo service monit restart
 
 The contents of the service check is pretty simple:
 
     check process pharo-http-server
-        with pidfile "/home/user/pharo/pharo-http-server/run-pharo-http-demo.pid"
+        with pidfile "/home/user/pharo/pharo-http-server/run-pharo-http-server.pid"
         start program = "/etc/init.d/pharo-http-server start"
         stop program = "/etc/init.d/pharo-http-server stop"
         if failed url http://localhost:42002/metrics/system.status
