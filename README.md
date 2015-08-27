@@ -6,7 +6,7 @@ Tools to deploy and manage headless Pharo servers from the command line.
 ## Goal
 
 To deploy and manage a Pharo based server application on a Linux system.
-More specifically, Pharo 4 on a recent headless Ubuntu server.
+More specifically, Pharo 4 on Ubuntu 14.04 LTS server.
 
 The goal is to integrate well within the standard Linux world,
 
