@@ -17,7 +17,7 @@ fi
 read -p "User (empty for current user): " SERVICE_USER
 if ["$SERVICE_USER" = ''];
 then
-    $SERVICE_USER=$USER
+    SERVICE_USER=$USER
 fi
 read -p "Description: " DESCRIPTION
 read -p "Metacello repository: " CONFIG_REPO
