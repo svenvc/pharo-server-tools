@@ -70,6 +70,12 @@ Each server application will eventually be deployed and run
 from its own directory under `~/pharo`. From the operational
 standpoint this is the only relevant place.
 
+Next we describe the different steps needed
+to set everything up manually.
+There is also an interactive to automate all these steps.
+
+    ./pharo-server-tools/scaffold.sh
+    
 
 ## Building
 

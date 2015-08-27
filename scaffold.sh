@@ -1,9 +1,8 @@
 #!/bin/bash
 
-echo This script will setup a new Pharo service
-
 if [ -d "~/pharo/build" ]
 then
+    echo This script will setup a new Pharo service
 else
     echo Please run install-pharo.sh first
     exit
