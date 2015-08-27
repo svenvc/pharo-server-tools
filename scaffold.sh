@@ -40,7 +40,7 @@ then
     METRICS_PORT=42002
 fi
 
-mkdir ~/pharo/$SERVICE_NAME
+mkdir -p ~/pharo/$SERVICE_NAME
 
 echo Creating custom build script
 
@@ -48,7 +48,7 @@ m4 \
     -D_SERVICE_NAME_=$SERVICE_NAME \
     -D_IMAGE_NAME_=$IMAGE_NAME \
     -D_SERVICE_USER_=$SERVICE_USER \
-    -D_DESCRIPTION_=$DESCRIPTION \
+    -D_DESCRIPTION_="$DESCRIPTION" \
     -D_CONFIG_REPO_=$CONFIG_REPO \
     -D_CONFIG_NAME_=$CONFIG_NAME \
     -D_CONFIG_USER_=$CONFIG_USER \
@@ -56,7 +56,7 @@ m4 \
     -D_CONFIG_VERSION_=$CONFIG_VERSION \
     -D_TELNET_PORT_=$TELNET_PORT \
     -D_METRICS_PORT_=$METRICS_PORT \
-    monit-service-check.m4 \
+    build.sh.m4 \
     > ~/pharo/build/build-$SERVICE_NAME.sh
 
 chmod +x ~/pharo/build/build-$SERVICE_NAME.sh
