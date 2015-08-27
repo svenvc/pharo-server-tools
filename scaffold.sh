@@ -27,7 +27,7 @@ read -p "Metacello password: " CONFIG_PASS
 read -p "Metacello version (empty for stable): " CONFIG_VERSION
 if ["$CONFIG_VERSION" = ''];
 then
-    $CONFIG_VERSION=stable
+    CONFIG_VERSION=stable
 fi
 read -p "Telnet port (empty for 42001): " TELNET_PORT
 if ["$TELNET_PORT" = ''];
