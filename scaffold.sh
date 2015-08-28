@@ -89,7 +89,7 @@ m4 \
     -D_TELNET_PORT_=$TELNET_PORT \
     -D_METRICS_PORT_=$METRICS_PORT \
     run.st.m4 \
-    > $service_home/run-$SERVICE_NAME.sh
+    > $service_home/run-$SERVICE_NAME.st
 
 echo Creating custom init.d script
 
@@ -128,3 +128,8 @@ m4 \
     > $service_home/monit-service-check
 
 echo Done
+
+echo To install the init.d script do
+echo sudo scp $service_home/init.d.script /etc/init.d/$service_name
+echo To install the monit service check do
+echo sudo scp $service_home/monit-service-check /etc/monit/conf.d/$service_name
