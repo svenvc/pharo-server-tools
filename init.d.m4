@@ -1,9 +1,9 @@
 #! /bin/sh
 ### BEGIN INIT INFO
-# Provides:          _SERVICE_NAME_ 
+`#' Provides:          _SERVICE_NAME_ 
 # Default-Start:     2 3 4 5
 # Default-Stop:      S 0 1 6
-# Short-Description: _DESCRIPTION_
+`#' Short-Description: _DESCRIPTION_
 ### END INIT INFO
 
 DESC="_DESCRIPTION_"
