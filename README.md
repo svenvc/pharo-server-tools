@@ -72,7 +72,7 @@ standpoint this is the only relevant place.
 
 Next we describe the different steps needed
 to set everything up manually.
-There is also an interactive to automate all these steps.
+There is also an interactive script to automate all these steps.
 
     ./pharo-server-tools/scaffold.sh
     

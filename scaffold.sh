@@ -1,6 +1,11 @@
 #!/bin/bash
 
-if [ -d ~/pharo/build ];
+script_home=$(dirname $0)
+script_home=$(cd $script_home && pwd)
+vm=~/pharo/bin/pharo
+build_home=~/pharo/build
+
+if [ -d $build_home ];
 then
     echo This script will setup a new Pharo service under ~/pharo
 else
@@ -40,7 +45,9 @@ then
     METRICS_PORT=42002
 fi
 
-mkdir -p ~/pharo/$SERVICE_NAME
+service_home=~/pharo/$SERVICE_NAME
+
+mkdir -p $service_home
 
 echo Creating custom build script
 
@@ -57,15 +64,15 @@ m4 \
     -D_TELNET_PORT_=$TELNET_PORT \
     -D_METRICS_PORT_=$METRICS_PORT \
     build.sh.m4 \
-    > ~/pharo/build/build-$SERVICE_NAME.sh
+    > $build_home/build-$SERVICE_NAME.sh
 
-chmod +x ~/pharo/build/build-$SERVICE_NAME.sh
+chmod +x $build_home/build-$SERVICE_NAME.sh
 
-~/pharo/build/build-$SERVICE_NAME.sh
+$build_home/build-$SERVICE_NAME.sh
 
-mv ~/pharo/build/IMAGE_NAME.* ~/pharo/$SERVICE_NAME/
+mv $build_home/IMAGE_NAME.* $service_home
 
-cp pharo-ctl.sh ~/pharo/$SERVICE_NAME
+cp pharo-ctl.sh $service_home
 
 echo Creating custom run/startup script
 
@@ -82,7 +89,7 @@ m4 \
     -D_TELNET_PORT_=$TELNET_PORT \
     -D_METRICS_PORT_=$METRICS_PORT \
     run.st.m4 \
-    > ~/pharo/$SERVICE_NAME/run-$SERVICE_NAME.sh
+    > $service_home/run-$SERVICE_NAME.sh
 
 echo Creating custom init.d script
 
@@ -99,7 +106,7 @@ m4 \
     -D_TELNET_PORT_=$TELNET_PORT \
     -D_METRICS_PORT_=$METRICS_PORT \
     init.d.m4 \
-    > ~/pharo/$SERVICE_NAME/init.d.script
+    > $service_home/init.d.script
 
 echo Creating custom monit service check
 
@@ -116,6 +123,6 @@ m4 \
     -D_TELNET_PORT_=$TELNET_PORT \
     -D_METRICS_PORT_=$METRICS_PORT \
     monit-service-check.m4 \
-    > ~/pharo/$SERVICE_NAME/monit-service-check
+    > $service_home/monit-service-check
 
 echo Done
