@@ -64,13 +64,13 @@ m4 \
     -D_TELNET_PORT_=$TELNET_PORT \
     -D_METRICS_PORT_=$METRICS_PORT \
     build.sh.m4 \
-    > $build_home/build-$SERVICE_NAME.sh
+    > $build_home/build-$IMAGE_NAME.sh
 
-chmod +x $build_home/build-$SERVICE_NAME.sh
+chmod +x $build_home/build-$IMAGE_NAME.sh
 
-$build_home/build-$SERVICE_NAME.sh
+$build_home/build-$IMAGE_NAME.sh
 
-mv $build_home/IMAGE_NAME.* $service_home
+mv $build_home/$IMAGE_NAME.* $service_home
 
 cp pharo-ctl.sh $service_home
 

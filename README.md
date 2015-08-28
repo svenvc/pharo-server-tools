@@ -63,7 +63,7 @@ It is assumed your whole application is packaged using
 one single Metacello configuration that loads all dependencies.
 
 Furthermore it is assumed that you have a script that actually
-starts up you application. This could be as simple as
+starts up your application. This could be as simple as
 `MyApp start` but will probably be a bit more involved.
 
 Each server application will eventually be deployed and run
