@@ -108,6 +108,8 @@ m4 \
     init.d.m4 \
     > $service_home/init.d.script
 
+chmod +x $service_home/init.d.script
+
 echo Creating custom monit service check
 
 m4 \
