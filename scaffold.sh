@@ -15,12 +15,12 @@ fi
 
 read -p "Service name: " SERVICE_NAME
 read -p "Image name (empty for service name): " IMAGE_NAME
-if ["$IMAGE_NAME" = ''];
+if [ "$IMAGE_NAME" = '' ];
 then
     IMAGE_NAME=$SERVICE_NAME
 fi
 read -p "User (empty for current user): " SERVICE_USER
-if ["$SERVICE_USER" = ''];
+if [ "$SERVICE_USER" = '' ];
 then
     SERVICE_USER=$USER
 fi
@@ -30,17 +30,17 @@ read -p "Metacello name: " CONFIG_NAME
 read -p "Metacello user: " CONFIG_USER
 read -p "Metacello password: " CONFIG_PASS
 read -p "Metacello version (empty for stable): " CONFIG_VERSION
-if ["$CONFIG_VERSION" = ''];
+if [ "$CONFIG_VERSION" = '' ];
 then
     CONFIG_VERSION=stable
 fi
 read -p "Telnet port (empty for 42001): " TELNET_PORT
-if ["$TELNET_PORT" = ''];
+if [ "$TELNET_PORT" = '' ];
 then
     TELNET_PORT=42001
 fi
 read -p "Metrics port (empty for 42002): " METRICS_PORT
-if ["$METRICS_PORT" = ''];
+if [ "$METRICS_PORT" = '' ];
 then
     METRICS_PORT=42002
 fi
