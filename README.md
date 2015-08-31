@@ -15,6 +15,9 @@ The goal is to integrate well within the standard Linux world,
 - setup logging to daily files
 - setup secure REPL access to the running application
 
+This document describes the basic manual installation procedure.
+There is also an interactive scaffold script that automates most work.
+
 
 ## Installation
 
@@ -333,4 +336,10 @@ Carefully read the run/startup script, the init.d script and the service check s
 Path names and port numbers should match.
 Double check that the right processes run (`ps auxw | grep pharo`).
 
+
+## Resources
+
+The following chapter from the 'Enterprise Pharo, a Web prespective' 
+treats the same subject: 
+[Deploying a Pharo web application in production](http://files.pharo.org/books/enterprisepharo/book/html/DeployForProduction.html)
 
