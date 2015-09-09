@@ -130,6 +130,6 @@ m4 \
 echo Done
 
 echo To install the init.d script do
-echo sudo scp $service_home/init.d.script /etc/init.d/$SERVICE_NAME
+echo sudo cp $service_home/init.d.script /etc/init.d/$SERVICE_NAME
 echo To install the monit service check do
-echo sudo scp $service_home/monit-service-check /etc/monit/conf.d/$SERVICE_NAME
+echo sudo cp $service_home/monit-service-check /etc/monit/conf.d/$SERVICE_NAME
