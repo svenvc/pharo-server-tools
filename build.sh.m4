@@ -3,13 +3,13 @@
 script_home=$(dirname $0)
 script_home=$(cd $script_home && pwd)
 vm=$script_home/../bin/pharo
-image=$script_home/build.image
+image=$script_home/build-_IMAGE_NAME_.image
 
 if [ -f $image ];
 then
     echo This script will build a _IMAGE_NAME_ image
 else
-    $vm $script_home/Pharo.image save build
+    $vm $script_home/Pharo.image save build-_IMAGE_NAME_
     echo This script will build a _IMAGE_NAME_ image    
 fi
 
