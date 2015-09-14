@@ -27,13 +27,14 @@ fi
 read -p "Description: " DESCRIPTION
 read -p "Metacello repository: " CONFIG_REPO
 read -p "Metacello name: " CONFIG_NAME
-read -p "Metacello user: " CONFIG_USER
-read -p "Metacello password: " CONFIG_PASS
+read -p "Metacello user (empty for none): " CONFIG_USER
+read -p "Metacello password (empty for none): " CONFIG_PASS
 read -p "Metacello version (empty for stable): " CONFIG_VERSION
 if [ "$CONFIG_VERSION" = '' ];
 then
     CONFIG_VERSION=stable
 fi
+read -p "Metacello group (empty for none): " CONFIG_GROUP
 read -p "Telnet port (empty for 42001): " TELNET_PORT
 if [ "$TELNET_PORT" = '' ];
 then
@@ -61,6 +62,7 @@ m4 \
     -D_CONFIG_USER_=$CONFIG_USER \
     -D_CONFIG_PASS_=$CONFIG_PASS \
     -D_CONFIG_VERSION_=$CONFIG_VERSION \
+    -D_CONFIG_GROUP_=$CONFIG_GROUP \
     -D_TELNET_PORT_=$TELNET_PORT \
     -D_METRICS_PORT_=$METRICS_PORT \
     build.sh.m4 \
@@ -86,6 +88,7 @@ m4 \
     -D_CONFIG_USER_=$CONFIG_USER \
     -D_CONFIG_PASS_=$CONFIG_PASS \
     -D_CONFIG_VERSION_=$CONFIG_VERSION \
+    -D_CONFIG_GROUP_=$CONFIG_GROUP \
     -D_TELNET_PORT_=$TELNET_PORT \
     -D_METRICS_PORT_=$METRICS_PORT \
     run.st.m4 \
@@ -103,6 +106,7 @@ m4 \
     -D_CONFIG_USER_=$CONFIG_USER \
     -D_CONFIG_PASS_=$CONFIG_PASS \
     -D_CONFIG_VERSION_=$CONFIG_VERSION \
+    -D_CONFIG_GROUP_=$CONFIG_GROUP \
     -D_TELNET_PORT_=$TELNET_PORT \
     -D_METRICS_PORT_=$METRICS_PORT \
     init.d.m4 \
@@ -122,6 +126,7 @@ m4 \
     -D_CONFIG_USER_=$CONFIG_USER \
     -D_CONFIG_PASS_=$CONFIG_PASS \
     -D_CONFIG_VERSION_=$CONFIG_VERSION \
+    -D_CONFIG_GROUP_=$CONFIG_GROUP \
     -D_TELNET_PORT_=$TELNET_PORT \
     -D_METRICS_PORT_=$METRICS_PORT \
     monit-service-check.m4 \
