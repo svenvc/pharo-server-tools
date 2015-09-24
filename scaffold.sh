@@ -34,7 +34,11 @@ if [ "$CONFIG_VERSION" = '' ];
 then
     CONFIG_VERSION=stable
 fi
-read -p "Metacello group (empty for none): " CONFIG_GROUP
+read -p "Metacello group (empty for default): " CONFIG_GROUP
+if [ "$CONFIG_GROUP" = '' ];
+then
+    CONFIG_GROUP=default
+fi
 read -p "Telnet port (empty for 42001): " TELNET_PORT
 if [ "$TELNET_PORT" = '' ];
 then
