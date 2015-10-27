@@ -1,8 +1,10 @@
 #! /bin/sh
 ### BEGIN INIT INFO
 `#' Provides:          _SERVICE_NAME_ 
+# Required-Start:    $local_fs $remote_fs $network $named
+# Required-Stop:     $local_fs $remote_fs $network $named
 # Default-Start:     2 3 4 5
-# Default-Stop:      S 0 1 6
+# Default-Stop:      0 1 6
 `#' Short-Description: _DESCRIPTION_
 ### END INIT INFO
 

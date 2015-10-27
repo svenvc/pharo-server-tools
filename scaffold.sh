@@ -140,5 +140,6 @@ echo Done
 
 echo To install the init.d script do
 echo sudo cp $service_home/init.d.script /etc/init.d/$SERVICE_NAME
+echo sudo update-rc.d $SERVICE_NAME defaults
 echo To install the monit service check do
 echo sudo cp $service_home/monit-service-check /etc/monit/conf.d/$SERVICE_NAME

@@ -211,9 +211,10 @@ System administrators need this so called service entry to learn
 about your application. We will reuse this feature ourselves later on as well.
 
 To do this you have to create a script inside `/etc/init.d`.
-Copy the template
+Copy the template and update the System V style RC init subsystem:
 
     sudo cp ~/pharo-server-tools/init.d.template /etc/init.d/pharo-http-server
+    sudo update-rc.d pharo-http-server defaults
 
 Again, the script is more or less ready for our demo/tutorial.
 Check the variables at the top, you need to change the `user` in 
