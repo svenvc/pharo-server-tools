@@ -98,6 +98,26 @@ m4 \
     run.st.m4 \
     > $service_home/run-$SERVICE_NAME.st
 
+echo Creating custom REPL script
+
+m4 \
+    -D_SERVICE_NAME_=$SERVICE_NAME \
+    -D_IMAGE_NAME_=$IMAGE_NAME \
+    -D_SERVICE_USER_=$SERVICE_USER \
+    -D_DESCRIPTION_="$DESCRIPTION" \
+    -D_CONFIG_REPO_=$CONFIG_REPO \
+    -D_CONFIG_NAME_=$CONFIG_NAME \
+    -D_CONFIG_USER_=$CONFIG_USER \
+    -D_CONFIG_PASS_=$CONFIG_PASS \
+    -D_CONFIG_VERSION_=$CONFIG_VERSION \
+    -D_CONFIG_GROUP_=$CONFIG_GROUP \
+    -D_TELNET_PORT_=$TELNET_PORT \
+    -D_METRICS_PORT_=$METRICS_PORT \
+    repl.sh.m4 \
+    > $service_home/repl.sh
+
+chmod +x $service_home/repl.sh
+
 echo Creating custom init.d script
 
 m4 \

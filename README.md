@@ -330,6 +330,9 @@ Here is a transcript of a session with this tool.
     Bye!
     Connection closed by foreign host.
 
+There is an executable script called repl.sh that helps you remember how to connect
+to the telnet REPL service.
+
 
 ## Troubleshooting
 
