@@ -23,27 +23,35 @@ There is also an interactive scaffold script that automates most work.
 
 Note that we assume that you operate your machine as a normal user.
 
-    echo $USER
+````bash
+echo $USER
+````
 
 Check out the project `pharo-server-tools` from github.
 You will need to install git first
 
-    sudo apt-get install git 
-    git clone https://github.com/svenvc/pharo-server-tools.git
+````bash
+sudo apt-get install git 
+git clone https://github.com/svenvc/pharo-server-tools.git
+````
 
 The following directory structure is used
 
-    ~/pharo
-    ~/pharo/bin
-    ~/pharo/bin/pharo-vm
-    ~/pharo/build
+````bash
+~/pharo
+~/pharo/bin
+~/pharo/bin/pharo-vm
+~/pharo/build
+````
 
 The script `install-pharo.sh` will download a Pharo 4 image + VM
 and move things around to create the directory structure.
 This has to be done only once. You will need to install unzip.
 
-    sudo apt-get install unzip
-    ~/pharo-server-tools/install-pharo.sh
+````bash
+sudo apt-get install unzip
+~/pharo-server-tools/install-pharo.sh
+````
 
 You can use both a 32 or 64 bit Ubuntu distribution.
 However, since the Pharo VM is still a 32 bit application, 
@@ -51,11 +59,13 @@ you will need to install some extra libraries in that case.
 
 The standard instructions are
 
-    sudo dpkg --add-architecture i386
-    sudo apt-get update
-    sudo apt-get install libc6:i386
-    sudo apt-get install libssl1.0.0:i386
-    sudo apt-get install libfreetype6:i386
+````bash
+sudo dpkg --add-architecture i386
+sudo apt-get update
+sudo apt-get install libc6:i386
+sudo apt-get install libssl1.0.0:i386
+sudo apt-get install libfreetype6:i386
+````
 
 You can use the script `ubuntu-32bit-support-on-64bit.sh` for this.
 
@@ -77,8 +87,10 @@ Next we describe the different steps needed
 to set everything up manually.
 There is also an interactive script to automate all these steps.
 
-    ./pharo-server-tools/scaffold.sh
-    
+````bash
+./pharo-server-tools/scaffold.sh
+````
+
 
 ## Building
 
@@ -91,19 +103,25 @@ Building will be done incrementally in a scratch image called
 `build.image`. This is created once or whenever you want to 
 completely start over. In the build directory do
 
-    ../bin/pharo Pharo.image save build
+````bash
+../bin/pharo Pharo.image save build
+````
 
 Now edit the build.sh script to refer to load your configuration.
 The default just loads NeoConsole for the REPL tool, a dependency
 you should add to your own projects. For the demo/tutorial this
 will be enough.
 
-    ./build.sh
+````bash
+./build.sh
+````
 
 After a successful build, copy the image again. Our demo/tutorial
 application will be called `pharo-http-server`.
 
-    ../bin/pharo build.image save pharo-http-server
+````bash
+../bin/pharo build.image save pharo-http-server
+````
 
 When you update your code, you execute the last 2 steps again.
 
@@ -114,38 +132,48 @@ When you update your code, you execute the last 2 steps again.
 
 Start by creating your deploy directory
 
-    mkdir ~/pharo/pharo-http-server
+````bash
+mkdir ~/pharo/pharo-http-server
+````
 
 Now move over the customised image and changes files that were
 created in the build step
 
-    mv ~/pharo/build/pharo-http-server.* ~/pharo/pharo-http-server
+````bash
+mv ~/pharo/build/pharo-http-server.* ~/pharo/pharo-http-server
+````
 
 To control our application process itself, to start it in the background,
 to figure out whether it is running and its process id, to stop it,
 we use a helper script called `pharo-ctl.sh`. Copy it 
 
-    cp ~/pharo-server-tools/pharo-ctl.sh ~/pharo/pharo-http-server
+````bash
+cp ~/pharo-server-tools/pharo-ctl.sh ~/pharo/pharo-http-server
+````
 
 Next we need a run or startup script. The template is good for the
 demo/tutorial, you will probably have to customise it. Copy it
 
-    cp ~/pharo-server-tools/run.st.template ~/pharo/pharo-http-server/run-pharo-http-server.st
+````bash
+cp ~/pharo-server-tools/run.st.template ~/pharo/pharo-http-server/run-pharo-http-server.st
+````
 
 Here is the script’s contents:
 
-    (NeoConsoleTranscript onFileNamed: 'server-{1}.log') install.
+````smalltalk
+(NeoConsoleTranscript onFileNamed: 'server-{1}.log') install.
 
-    Transcript
-      cr;
-      show: 'Starting '; show: (NeoConsoleTelnetServer startOn: 42001); cr;
-      show: 'Starting '; show: (NeoConsoleMetricDelegate startOn: 42002); cr;
-      flush.
+Transcript
+  cr;
+  show: 'Starting '; show: (NeoConsoleTelnetServer startOn: 42001); cr;
+  show: 'Starting '; show: (NeoConsoleMetricDelegate startOn: 42002); cr;
+  flush.
 
-    (ZnServer defaultOn: 8080)
-      logToTranscript;
-      logLevel: 2;
-      start.
+(ZnServer defaultOn: 8080)
+  logToTranscript;
+  logLevel: 2;
+  start.
+````
 
 The first expression installs a non-interactive transcript that redirects
 all Transcript output to files which are organised by day.
@@ -163,22 +191,24 @@ The `pharo-ctl` script always takes 3 arguments, the name of the
 startup script, the desired operation and the name of the image.
 Execute it without arguments for help
 
-    ./pharo-ctl.sh 
-    Executing ./pharo-ctl.sh
-    Working directory /home/sven/pharo/pharo-http-server
-    Usage: ./pharo-ctl.sh <script> <command> <image>
-        manage a Pharo server
-    Naming
-        script       is used as unique identifier
-        script.st    must exist and is the Pharo startup script  
-        script.pid   will be used to hold the process id
-        image.image  is the Pharo image that will be started
-    Commands:
-        start    start the server in background
-        stop     stop the server
-        restart  restart the server
-        run      run the server in foreground
-        pid      print the process id 
+````bash
+./pharo-ctl.sh 
+Executing ./pharo-ctl.sh
+Working directory /home/sven/pharo/pharo-http-server
+Usage: ./pharo-ctl.sh <script> <command> <image>
+    manage a Pharo server
+Naming
+    script       is used as unique identifier
+    script.st    must exist and is the Pharo startup script  
+    script.pid   will be used to hold the process id
+    image.image  is the Pharo image that will be started
+Commands:
+    start    start the server in background
+    stop     stop the server
+    restart  restart the server
+    run      run the server in foreground
+    pid      print the process id 
+````
 
 Note that the extensions `.st` and `.image` are added automatically.
 
@@ -193,11 +223,15 @@ be unique on your machine.
 
 To figure out whether it is running and get its process id (PID)
 
-    ./pharo-ctl.sh run-pharo-http-server pid pharo-http-server
+````bash
+./pharo-ctl.sh run-pharo-http-server pid pharo-http-server
+````
 
 To stop the background process
 
-    ./pharo-ctl.sh run-pharo-http-server stop pharo-http-server
+````bash
+./pharo-ctl.sh run-pharo-http-server stop pharo-http-server
+````
 
 You can invoke this last command multiple times if you somehow managed 
 to start multiple copies.
@@ -213,8 +247,10 @@ about your application. We will reuse this feature ourselves later on as well.
 To do this you have to create a script inside `/etc/init.d`.
 Copy the template and update the System V style RC init subsystem:
 
-    sudo cp ~/pharo-server-tools/init.d.template /etc/init.d/pharo-http-server
-    sudo update-rc.d pharo-http-server defaults
+````bash
+sudo cp ~/pharo-server-tools/init.d.template /etc/init.d/pharo-http-server
+sudo update-rc.d pharo-http-server defaults
+````
 
 Again, the script is more or less ready for our demo/tutorial.
 Check the variables at the top, you need to change the `user` in 
@@ -222,10 +258,11 @@ the `PHDIR=` and `SU=` lines to the actual user you are using.
 
 If everything is well, Linux can now control your application.
 
-    sudo service pharo-http-server
-    sudo service pharo-http-server start
-    sudo service pharo-http-server stop
-
+````bash
+sudo service pharo-http-server
+sudo service pharo-http-server start
+sudo service pharo-http-server stop
+````
 
 ### Integrating with monitoring
 
@@ -237,7 +274,9 @@ In our startup script we started a special, locally bound HTTP server just
 for this purpose, running on port 42002. The URI `/metrics/server.status` gives
 a simple service status indication.
 
-    curl http://localhost:42002/metrics/server.status
+````bash
+curl http://localhost:42002/metrics/server.status
+````
 
 Which returns a single line of text, like
 
@@ -245,27 +284,35 @@ Which returns a single line of text, like
 
 We chose to use monit for this purpose.
 
-    sudo apt-get install monit
+````bash
+sudo apt-get install monit
+````
 
 Now copy over the template
 
-    sudo cp ~/pharo-server-tools/monit-service-check.template /etc/monit/conf.d/pharo-http-server
+````bash
+sudo cp ~/pharo-server-tools/monit-service-check.template /etc/monit/conf.d/pharo-http-server
+````
 
 Edit the file by replace `user` with your username and restart monit, 
 after validating validating the syntax.
 
-    sudo service monit syntax
-    sudo service monit restart
+````bash
+sudo service monit syntax
+sudo service monit restart
+````
 
 The contents of the service check is pretty simple:
 
-    check process pharo-http-server
-        with pidfile "/home/user/pharo/pharo-http-server/run-pharo-http-server.pid"
-        start program = "/etc/init.d/pharo-http-server start"
-        stop program = "/etc/init.d/pharo-http-server stop"
-        if failed url http://localhost:42002/metrics/system.status
-           timeout 10 seconds retry 3
-           then restart 
+````bash
+check process pharo-http-server
+    with pidfile "/home/user/pharo/pharo-http-server/run-pharo-http-server.pid"
+    start program = "/etc/init.d/pharo-http-server start"
+    stop program = "/etc/init.d/pharo-http-server stop"
+    if failed url http://localhost:42002/metrics/system.status
+       timeout 10 seconds retry 3
+       then restart 
+````
 
 It says to check the specified URL and restart if there is no successful response to it,
 retrying 3 times with a timeout of 10 seconds each time. 
@@ -284,51 +331,58 @@ With NeoConsole’s REPL (read-eval-print-loop) telenet access you can do just t
 In our startup script we started a special, locally bound Telnet server
 on port 42001.
 
-    telnet localhost 42001
+````bash
+telnet localhost 42001
 
+./repl.sh
+````
+
+You can use telnet directly or use the repl.sh script.
 Here is a transcript of a session with this tool.
 
-    Trying 127.0.0.1...
-    Connected to localhost.
-    Escape character is '^]'.
-    Neo Console Pharo4.0 of 18 March 2013 update 40618
-    > help
-    help <command>
-    known commands are:
-      describe
-      eval DEFAULT
-      get
-      help
-      history
-      quit
-    > get
-    known metrics:
-      system.status - Simple system status
-      memory.total - Total allocated memory
-      memory.free - Free memory
-      system.date - Current date
-      system.time - Current time
-      system.timestamp - Current timestamp
-      process.count - Current process count
-      process.list - Current list of processes
-      system.version - Image version info
-      system.mcversions - Monticello packages version info
-    > get system.status
-    Status OK - Clock 2015-08-25T14:31:07.769294+02:00 - Allocated 55,551,212 bytes - 11.44 % free.
-    > 123 factorial
+````bash
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+Neo Console Pharo4.0 of 18 March 2013 update 40618
+> help
+help <command>
+known commands are:
+  describe
+  eval DEFAULT
+  get
+  help
+  history
+  quit
+> get
+known metrics:
+  system.status - Simple system status
+  memory.total - Total allocated memory
+  memory.free - Free memory
+  system.date - Current date
+  system.time - Current time
+  system.timestamp - Current timestamp
+  process.count - Current process count
+  process.list - Current list of processes
+  system.version - Image version info
+  system.mcversions - Monticello packages version info
+> get system.status
+  Status OK - Clock 2015-08-25T14:31:07.769294+02:00 - Allocated 55,551,212 bytes - 11.44 % free.
+> 123 factorial
 
-    12146304367025329675766243241881295855454217088483382315328918161829235892362167668831156960612640202170735835221294047782591091570411651472186029519906261646730733907419814952960000000000000000000000000000
-    > 0@0 extent: 10@20
+12146304367025329675766243241881295855454217088483382315328918161829235892362167668831156960612640202170735835221294047782591091570411651472186029519906261646730733907419814952960000000000000000000000000000
+> 0@0 extent: 10@20
 
-    (0@0) corner: (10@20)
-    > =
-    self: (0@0) corner: (10@20)
-    class: Rectangle
-    origin: (0@0)
-    corner: (10@20)
-    > quit
-    Bye!
-    Connection closed by foreign host.
+(0@0) corner: (10@20)
+> =
+self: (0@0) corner: (10@20)
+class: Rectangle
+origin: (0@0)
+corner: (10@20)
+> quit
+Bye!
+Connection closed by foreign host.
+````
 
 There is an executable script called repl.sh that helps you remember how to connect
 to the telnet REPL service.
