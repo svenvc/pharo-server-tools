@@ -138,6 +138,24 @@ m4 \
 
 chmod +x $service_home/init.d.script
 
+echo Creating custom systemd.service script
+
+m4 \
+    -D_SERVICE_NAME_=$SERVICE_NAME \
+    -D_IMAGE_NAME_=$IMAGE_NAME \
+    -D_SERVICE_USER_=$SERVICE_USER \
+    -D_DESCRIPTION_="$DESCRIPTION" \
+    -D_CONFIG_REPO_=$CONFIG_REPO \
+    -D_CONFIG_NAME_=$CONFIG_NAME \
+    -D_CONFIG_USER_=$CONFIG_USER \
+    -D_CONFIG_PASS_=$CONFIG_PASS \
+    -D_CONFIG_VERSION_=$CONFIG_VERSION \
+    -D_CONFIG_GROUP_=$CONFIG_GROUP \
+    -D_TELNET_PORT_=$TELNET_PORT \
+    -D_METRICS_PORT_=$METRICS_PORT \
+    systemd.service.m4 \
+    > $service_home/systemd.service.script
+
 echo Creating custom monit service check
 
 m4 \
@@ -161,5 +179,9 @@ echo Done
 echo To install the init.d script do
 echo sudo cp $service_home/init.d.script /etc/init.d/$SERVICE_NAME
 echo sudo update-rc.d $SERVICE_NAME defaults
+echo To install the systemd.service script do
+echo sudo cp $service_home/systemd.service.script /etc/systemd/system/$SERVICE_NAME.service
+echo sudo systemctl daemon-reload
+echo sudo systemctl enable $SERVICE_NAME
 echo To install the monit service check do
 echo sudo cp $service_home/monit-service-check /etc/monit/conf.d/$SERVICE_NAME

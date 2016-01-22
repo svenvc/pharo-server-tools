@@ -10,7 +10,7 @@ More specifically, Pharo 4 on Ubuntu 14.04 LTS server.
 
 The goal is to integrate well within the standard Linux world,
 
-- create an entry in `/etc/init.d` for automatic start/stop/restart
+- create an entry in `/etc/init.d` or `/etc/systemd/system/` for automatic start/stop/restart
 - create an entry in `/etc/monit/conf.d` for monitoring with automatic restarts whenever the check fails
 - setup logging to daily files
 - setup secure REPL access to the running application
@@ -28,7 +28,7 @@ Note that we assume that you operate your machine as a normal user.
 Check out the project `pharo-server-tools` from github.
 You will need to install git first
 
-    sudo apt-get install git 
+    sudo apt-get install git-core 
     git clone https://github.com/svenvc/pharo-server-tools.git
 
 The following directory structure is used
@@ -225,6 +225,20 @@ If everything is well, Linux can now control your application.
     sudo service pharo-http-server
     sudo service pharo-http-server start
     sudo service pharo-http-server stop
+
+Alternatively, you can use the newer systemd approach.
+To do this you have to create a script inside `/etc/systemd/system`.
+Copy the template, reload the daemon and enable the service.
+
+    sudo cp ~/pharo-server-tools/systemd.service.template /etc/systemd/system/pharo-http-server
+    sudo systemctl daemon-reload
+    sudo systemctl enable pharo-http-server
+
+Make sure to change the user. Now you can manipulate the service in a standard way.
+
+    sudo systemctl stop pharo-http-server
+    sudo systemctl start pharo-http-server
+    sudo systemctl status pharo-http-server
 
 
 ### Integrating with monitoring
