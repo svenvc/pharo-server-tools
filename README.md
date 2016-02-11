@@ -244,6 +244,8 @@ so that it will start automatically whenever your machine (re)starts.
 System administrators need this so called service entry to learn 
 about your application. We will reuse this feature ourselves later on as well.
 
+#### init.d
+
 To do this you have to create a script inside `/etc/init.d`.
 Copy the template and update the System V style RC init subsystem:
 
@@ -264,12 +266,14 @@ sudo service pharo-http-server start
 sudo service pharo-http-server stop
 ````
 
+#### systemd
+
 Alternatively, you can use the newer systemd approach.
 To do this you have to create a script inside `/etc/systemd/system`.
 Copy the template, reload the daemon and enable the service.
 
 ````bash
-sudo cp ~/pharo-server-tools/systemd.service.template /etc/systemd/system/pharo-http-server
+sudo cp ~/pharo-server-tools/systemd.service.template /etc/systemd/system/pharo-http-server.service
 sudo systemctl daemon-reload
 sudo systemctl enable pharo-http-server
 ````
@@ -335,7 +339,9 @@ check process pharo-http-server
 
 It says to check the specified URL and restart if there is no successful response to it,
 retrying 3 times with a timeout of 10 seconds each time. 
+
 Note how we reuse the init script and the PID file.
+When using systemd, you will need to modify the start and stop programs accordingly.
 
 Consult monit’s documentation for more options, like email notifications.
 
