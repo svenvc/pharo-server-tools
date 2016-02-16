@@ -91,6 +91,48 @@ There is also an interactive script to automate all these steps.
 ./pharo-server-tools/scaffold.sh
 ````
 
+Here is an example usage, installing a Pharo HTTP Server, with NeoConsole as sole dependency.
+
+````bash
+$ ./scaffold.sh 
+This script will setup a new Pharo service under /home/t3/pharo
+Service name: pharo-http-server
+Image name (empty for service name): 
+User (empty for current user): 
+Description: Pharo HTTP Server
+Metacello repository: http://mc.stfx.eu/Neo
+Metacello name: ConfigurationOfNeoConsole
+Metacello user (empty for none): 
+Metacello password (empty for none): 
+Metacello version (empty for stable): 
+Metacello group (empty for default): 
+Telnet port (empty for 42001): 
+Metrics port (empty for 42002): 
+Creating custom build script
+This script will build a pharo-http-server image
+'Installing ConfigurationOfNeoConsole stable'
+
+Loading 8 of ConfigurationOfNeoConsole...
+Fetched -> Neo-Console-Core-SvenVanCaekenberghe.15 --- http://mc.stfx.eu/Neo --- http://mc.stfx.eu/Neo
+Loaded -> Neo-Console-Core-SvenVanCaekenberghe.15 --- http://mc.stfx.eu/Neo --- cache
+...finished 8
+Creating custom run/startup script
+Creating custom REPL script
+Creating custom init.d script
+Creating custom systemd.service script
+Creating custom monit service check
+Done
+To install the init.d script do
+sudo cp /home/t3/pharo/pharo-http-server/init.d.script /etc/init.d/pharo-http-server
+sudo update-rc.d pharo-http-server defaults
+To install the systemd.service script do
+sudo cp /home/t3/pharo/pharo-http-server/systemd.service.script /etc/systemd/system/pharo-http-server.service
+sudo systemctl daemon-reload
+sudo systemctl enable pharo-http-server
+To install the monit service check do
+sudo cp /home/t3/pharo/pharo-http-server/monit-service-check /etc/monit/conf.d/pharo-http-server
+````
+
 
 ## Building
 
