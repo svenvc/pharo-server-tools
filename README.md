@@ -75,6 +75,15 @@ You can use the script `ubuntu-32bit-support-on-64bit.sh` for this.
 It is assumed your whole application is packaged using 
 one single Metacello configuration that loads all dependencies.
 
+Note that if you want to use the REPL and HTTP monitoring features described here, you need to include NeoConsole as one of your dependencies.
+
+````
+project: 'NeoConsole' with: [
+  spec 
+    className: 'ConfigurationOfNeoConsole';
+    repository: 'http://mc.stfx.eu/Neo' ];
+````
+
 Furthermore it is assumed that you have a script that actually
 starts up your application. This could be as simple as
 `MyApp start` but will probably be a bit more involved.
