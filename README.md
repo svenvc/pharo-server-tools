@@ -345,11 +345,11 @@ You want automatic monitoring of some external feature of your
 application server with the option to restart it should the service check fail.
 
 In our startup script we started a special, locally bound HTTP server just
-for this purpose, running on port 42002. The URI `/metrics/server.status` gives
+for this purpose, running on port 42002. The URI `/metrics/system.status` gives
 a simple service status indication.
 
 ````bash
-curl http://localhost:42002/metrics/server.status
+curl http://localhost:42002/metrics/system.status
 ````
 
 Which returns a single line of text, like
