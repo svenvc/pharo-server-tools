@@ -2,6 +2,11 @@ check process pharo-http-server
     with pidfile "/home/user/pharo/pharo-http-server/run-pharo-http-server.pid"
     start program = "/etc/init.d/pharo-http-server start"
     stop program = "/etc/init.d/pharo-http-server stop"
-    if failed url http://localhost:42002/metrics/system.status
+    if failed 
+	   port 42002
+	   protocol http
+	   request "/metrics/system.status"
+	   status = 200
+	   content = "Status OK"
        timeout 10 seconds retry 3
-       then restart 
+    then restart
