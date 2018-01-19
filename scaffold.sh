@@ -115,12 +115,14 @@ echo Creating custom systemd.service script
 process_template systemd.service.m4 $service_home/systemd.service.script
 
 
-echo Creating custom monit service check
+echo Creating custom monit services
 
-process_template monit-service-check.m4 $service_home/monit-service-check
+process_template monit-service-init.d.m4 $service_home/monit-service-init.d
+process_template monit-service-systemd.m4 $service_home/monit-service-systemd
 
 echo Done
 
+#TODO fix text for systemd
 echo To install the init.d script do
 echo sudo cp $service_home/init.d.script /etc/init.d/$SERVICE_NAME
 echo sudo update-rc.d $SERVICE_NAME defaults
