@@ -54,9 +54,13 @@ service_home=~/pharo/$SERVICE_NAME
 
 mkdir -p $service_home
 
-echo Creating custom build script
+function process_template() {
+    if [$# -ne 2]; 
+        then echo "This function expects two arguments, the input and output file";
+        return;
+    fi
 
-m4 \
+    m4 \
     -D_SERVICE_NAME_=$SERVICE_NAME \
     -D_IMAGE_NAME_=$IMAGE_NAME \
     -D_SERVICE_USER_=$SERVICE_USER \
@@ -69,8 +73,14 @@ m4 \
     -D_CONFIG_GROUP_=$CONFIG_GROUP \
     -D_TELNET_PORT_=$TELNET_PORT \
     -D_METRICS_PORT_=$METRICS_PORT \
-    build.sh.m4 \
-    > $build_home/build-$IMAGE_NAME.sh
+    $1 \
+    > $2
+}
+
+
+echo Creating custom build script
+
+process_template build.sh.m4 $build_home/build-$IMAGE_NAME.sh
 
 chmod +x $build_home/build-$IMAGE_NAME.sh
 
@@ -80,99 +90,34 @@ mv $build_home/$IMAGE_NAME.* $service_home
 
 cp pharo-ctl.sh $service_home
 
+
 echo Creating custom run/startup script
 
-m4 \
-    -D_SERVICE_NAME_=$SERVICE_NAME \
-    -D_IMAGE_NAME_=$IMAGE_NAME \
-    -D_SERVICE_USER_=$SERVICE_USER \
-    -D_DESCRIPTION_="$DESCRIPTION" \
-    -D_CONFIG_REPO_=$CONFIG_REPO \
-    -D_CONFIG_NAME_=$CONFIG_NAME \
-    -D_CONFIG_USER_=$CONFIG_USER \
-    -D_CONFIG_PASS_=$CONFIG_PASS \
-    -D_CONFIG_VERSION_=$CONFIG_VERSION \
-    -D_CONFIG_GROUP_=$CONFIG_GROUP \
-    -D_TELNET_PORT_=$TELNET_PORT \
-    -D_METRICS_PORT_=$METRICS_PORT \
-    run.st.m4 \
-    > $service_home/run-$SERVICE_NAME.st
+process_template run.st.m4 $service_home/run-$SERVICE_NAME.st
+
 
 echo Creating custom REPL script
 
-m4 \
-    -D_SERVICE_NAME_=$SERVICE_NAME \
-    -D_IMAGE_NAME_=$IMAGE_NAME \
-    -D_SERVICE_USER_=$SERVICE_USER \
-    -D_DESCRIPTION_="$DESCRIPTION" \
-    -D_CONFIG_REPO_=$CONFIG_REPO \
-    -D_CONFIG_NAME_=$CONFIG_NAME \
-    -D_CONFIG_USER_=$CONFIG_USER \
-    -D_CONFIG_PASS_=$CONFIG_PASS \
-    -D_CONFIG_VERSION_=$CONFIG_VERSION \
-    -D_CONFIG_GROUP_=$CONFIG_GROUP \
-    -D_TELNET_PORT_=$TELNET_PORT \
-    -D_METRICS_PORT_=$METRICS_PORT \
-    repl.sh.m4 \
-    > $service_home/repl.sh
+process_template repl.sh.m4 $service_home/repl.sh
 
 chmod +x $service_home/repl.sh
 
+
 echo Creating custom init.d script
 
-m4 \
-    -D_SERVICE_NAME_=$SERVICE_NAME \
-    -D_IMAGE_NAME_=$IMAGE_NAME \
-    -D_SERVICE_USER_=$SERVICE_USER \
-    -D_DESCRIPTION_="$DESCRIPTION" \
-    -D_CONFIG_REPO_=$CONFIG_REPO \
-    -D_CONFIG_NAME_=$CONFIG_NAME \
-    -D_CONFIG_USER_=$CONFIG_USER \
-    -D_CONFIG_PASS_=$CONFIG_PASS \
-    -D_CONFIG_VERSION_=$CONFIG_VERSION \
-    -D_CONFIG_GROUP_=$CONFIG_GROUP \
-    -D_TELNET_PORT_=$TELNET_PORT \
-    -D_METRICS_PORT_=$METRICS_PORT \
-    init.d.m4 \
-    > $service_home/init.d.script
+process_template init.d.m4 $service_home/init.d.script
 
 chmod +x $service_home/init.d.script
 
+
 echo Creating custom systemd.service script
 
-m4 \
-    -D_SERVICE_NAME_=$SERVICE_NAME \
-    -D_IMAGE_NAME_=$IMAGE_NAME \
-    -D_SERVICE_USER_=$SERVICE_USER \
-    -D_DESCRIPTION_="$DESCRIPTION" \
-    -D_CONFIG_REPO_=$CONFIG_REPO \
-    -D_CONFIG_NAME_=$CONFIG_NAME \
-    -D_CONFIG_USER_=$CONFIG_USER \
-    -D_CONFIG_PASS_=$CONFIG_PASS \
-    -D_CONFIG_VERSION_=$CONFIG_VERSION \
-    -D_CONFIG_GROUP_=$CONFIG_GROUP \
-    -D_TELNET_PORT_=$TELNET_PORT \
-    -D_METRICS_PORT_=$METRICS_PORT \
-    systemd.service.m4 \
-    > $service_home/systemd.service.script
+process_template systemd.service.m4 $service_home/systemd.service.script
+
 
 echo Creating custom monit service check
 
-m4 \
-    -D_SERVICE_NAME_=$SERVICE_NAME \
-    -D_IMAGE_NAME_=$IMAGE_NAME \
-    -D_SERVICE_USER_=$SERVICE_USER \
-    -D_DESCRIPTION_="$DESCRIPTION" \
-    -D_CONFIG_REPO_=$CONFIG_REPO \
-    -D_CONFIG_NAME_=$CONFIG_NAME \
-    -D_CONFIG_USER_=$CONFIG_USER \
-    -D_CONFIG_PASS_=$CONFIG_PASS \
-    -D_CONFIG_VERSION_=$CONFIG_VERSION \
-    -D_CONFIG_GROUP_=$CONFIG_GROUP \
-    -D_TELNET_PORT_=$TELNET_PORT \
-    -D_METRICS_PORT_=$METRICS_PORT \
-    monit-service-check.m4 \
-    > $service_home/monit-service-check
+process_template monit-service-check.m4 $service_home/monit-service-check
 
 echo Done
 
