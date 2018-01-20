@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+
 script_home=$(dirname $0)
 script_home=$(cd $script_home && pwd)
 vm=~/pharo/bin/pharo
