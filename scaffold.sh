@@ -55,7 +55,7 @@ service_home=~/pharo/$SERVICE_NAME
 mkdir -p $service_home
 
 function process_template() {
-    if [ "$#" -ne 2]; 
+    if [ "$#" -ne 2 ]; 
         then echo "This function expects two arguments, the input and output file";
         return;
     fi
