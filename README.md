@@ -362,10 +362,16 @@ We chose to use monit for this purpose.
 sudo apt-get install monit
 ````
 
-Now copy over the template
+Now copy over the monit-service template corresponding to your choice of startup (init.d or systemd)
 
+_Using init.d_
 ````bash
-sudo cp ~/pharo-server-tools/monit-service-check.template /etc/monit/conf.d/pharo-http-server
+sudo cp ~/pharo-server-tools/monit-service-init.d.template /etc/monit/conf.d/pharo-http-server
+````
+
+_Using systemd_
+````bash
+sudo cp ~/pharo-server-tools/monit-service-systemd.template /etc/monit/conf.d/pharo-http-server
 ````
 
 Edit the file by replace `user` with your username and restart monit, 

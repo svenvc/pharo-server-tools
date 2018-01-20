@@ -127,7 +127,7 @@ echo sudo cp $service_home/init.d.script /etc/init.d/$SERVICE_NAME
 echo sudo update-rc.d $SERVICE_NAME defaults
 echo To install the monit service check for init.d do
 echo sudo cp $service_home/monit-service-init.d /etc/monit/conf.d/$SERVICE_NAME
-
+echo ""
 echo To install the systemd.service script do
 echo sudo cp $service_home/systemd.service.script /etc/systemd/system/$SERVICE_NAME.service
 echo sudo systemctl daemon-reload
