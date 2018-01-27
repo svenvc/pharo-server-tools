@@ -481,5 +481,5 @@ Double check that the right processes run (`ps auxw | grep pharo`).
 
 The following chapter from the 'Enterprise Pharo, a Web prespective' 
 treats the same subject: 
-[Deploying a Pharo web application in production](http://files.pharo.org/books/enterprisepharo/book/html/DeployForProduction.html)
+[Deploying a Pharo web application in production](https://ci.inria.fr/pharo-contribution/job/EnterprisePharoBook/lastSuccessfulBuild/artifact/book-result/DeploymentWeb/DeployForProduction.html)
 
