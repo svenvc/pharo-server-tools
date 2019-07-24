@@ -13,7 +13,10 @@ else
     echo This script will build a _IMAGE_NAME_ image    
 fi
 
-$vm $image config _CONFIG_REPO_ _CONFIG_NAME_ --username=_CONFIG_USER_ --password=_CONFIG_PASS_ --install=_CONFIG_VERSION_ --group=_CONFIG_GROUP_
-$vm $image save _IMAGE_NAME_
+# Start SSH agent and add private key for git authentication
+eval $(/usr/bin/ssh-agent)
+/usr/bin/ssh-add ~/.ssh/id_ed25519
+
+$vm $image eval --save "NonInteractiveTranscript stdout install. Metacello new repository: 'github://svenvc/NeoConsole/src'; baseline: 'NeoConsole'; load. Metacello new repository: '_CONFIG_REPO_'; baseline: '_CONFIG_BASELINE_'; onWarningLog; onConflictUseLoaded; load: '_CONFIG_GROUP_'."
 
 echo

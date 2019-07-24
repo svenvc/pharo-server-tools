@@ -50,7 +50,7 @@ fi
 pid_file="$script_home/$script.pid"
 
 vm=$script_home/../bin/pharo-vm/pharo
-options="--nodisplay"
+options="--vm-display-null"
 
 function start() {
     echo Starting $script in background

@@ -26,18 +26,12 @@ then
 fi
 read -p "Description: " DESCRIPTION
 read -p "Metacello repository: " CONFIG_REPO
-read -p "Metacello name: " CONFIG_NAME
-read -p "Metacello user (empty for none): " CONFIG_USER
-read -p "Metacello password (empty for none): " CONFIG_PASS
-read -p "Metacello version (empty for stable): " CONFIG_VERSION
-if [ "$CONFIG_VERSION" = '' ];
+read -p "Metacello baseline (excluding any 'BaselineOf' prefix): " CONFIG_BASELINE
+CONFIG_BASELINE=$CONFIG_BASELINE
+read -p "Metacello group (empty for 'default'): " CONFIG_GROUP
+if [ "$CONFIG_GROUPS" = '' ];
 then
-    CONFIG_VERSION=stable
-fi
-read -p "Metacello group (empty for default): " CONFIG_GROUP
-if [ "$CONFIG_GROUP" = '' ];
-then
-    CONFIG_GROUP=default
+    CONFIG_GROUPS=default
 fi
 read -p "Telnet port (empty for 42001): " TELNET_PORT
 if [ "$TELNET_PORT" = '' ];
@@ -66,10 +60,7 @@ function process_template() {
     -D_SERVICE_USER_=$SERVICE_USER \
     -D_DESCRIPTION_="$DESCRIPTION" \
     -D_CONFIG_REPO_=$CONFIG_REPO \
-    -D_CONFIG_NAME_=$CONFIG_NAME \
-    -D_CONFIG_USER_=$CONFIG_USER \
-    -D_CONFIG_PASS_=$CONFIG_PASS \
-    -D_CONFIG_VERSION_=$CONFIG_VERSION \
+    -D_CONFIG_BASELINE_=$CONFIG_BASELINE \
     -D_CONFIG_GROUP_=$CONFIG_GROUP \
     -D_TELNET_PORT_=$TELNET_PORT \
     -D_METRICS_PORT_=$METRICS_PORT \
@@ -86,37 +77,31 @@ chmod +x $build_home/build-$IMAGE_NAME.sh
 
 $build_home/build-$IMAGE_NAME.sh
 
-mv $build_home/$IMAGE_NAME.* $service_home
+mv $build_home/build-$IMAGE_NAME.changes $service_home/$IMAGE_NAME.changes
+mv $build_home/build-$IMAGE_NAME.image $service_home/$IMAGE_NAME.image
+cp $build_home/*.sources $service_home
+mv $build_home/pharo-local $service_home/
 
 cp pharo-ctl.sh $service_home
 
-
 echo Creating custom run/startup script
-
 process_template run.st.m4 $service_home/run-$SERVICE_NAME.st
 
 
 echo Creating custom REPL script
-
 process_template repl.sh.m4 $service_home/repl.sh
-
 chmod +x $service_home/repl.sh
 
 
 echo Creating custom init.d script
-
 process_template init.d.m4 $service_home/init.d.script
-
 chmod +x $service_home/init.d.script
 
 
 echo Creating custom systemd.service script
-
 process_template systemd.service.m4 $service_home/systemd.service.script
 
-
 echo Creating custom monit services
-
 process_template monit-service-init.d.m4 $service_home/monit-service-init.d
 process_template monit-service-systemd.m4 $service_home/monit-service-systemd
 
