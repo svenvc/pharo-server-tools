@@ -79,6 +79,7 @@ chmod +x $build_home/build-$IMAGE_NAME.sh
 
 $build_home/build-$IMAGE_NAME.sh
 
+# TODO Move these commands into build.sh.m4 and add checks if files exist (and if yes, rename to %d%m%y%h%m%s suffix)
 mv $build_home/build-$IMAGE_NAME.changes $service_home/$IMAGE_NAME.changes
 mv $build_home/build-$IMAGE_NAME.image $service_home/$IMAGE_NAME.image
 cp $build_home/*.sources $service_home
