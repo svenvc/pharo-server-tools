@@ -15,10 +15,9 @@ else
     echo This script will build a _IMAGE_NAME_ image    
 fi
 
-# Start SSH agent and add private key for git authentication
+# Start SSH agent and add private key(s) for git authentication
 eval $(/usr/bin/ssh-agent)
-/usr/bin/ssh-add ~/.ssh/id_ed25519
+/usr/bin/ssh-add
 
-$vm $image eval --save "NonInteractiveTranscript stdout install. Metacello new repository: 'github://svenvc/NeoConsole/src'; baseline: 'NeoConsole'; load. Metacello new repository: '_CONFIG_REPO_'; baseline: '_CONFIG_BASELINE_'; onWarningLog; onConflictUseLoaded; load: '_CONFIG_GROUP_'."
+$vm $image eval --save "Metacello new repository: 'github://objectguild/NeoConsole:master'; baseline: 'NeoConsole'; load. ((Smalltalk at: #NeoConsoleTranscript) onFileNamed: 'build-{1}.log') install. Metacello new repository: '_CONFIG_REPO_'; baseline: '_CONFIG_BASELINE_'; onWarningLog; onConflictUseLoaded; load: '_CONFIG_GROUP_'. (Smalltalk at: #NeoConsoleTranscript) shutDown."
 
-echo
