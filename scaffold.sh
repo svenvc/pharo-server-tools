@@ -2,6 +2,8 @@
 
 script_home=$(dirname $0)
 script_home=$(cd $script_home && pwd)
+echo "Running from $script_home"
+
 vm=~/pharo/bin/pharo
 build_home=~/pharo/build
 
@@ -71,7 +73,7 @@ function process_template() {
 
 echo Creating custom build script
 
-process_template build.sh.m4 $build_home/build-$IMAGE_NAME.sh
+process_template $script_home/build.sh.m4 $build_home/build-$IMAGE_NAME.sh
 
 chmod +x $build_home/build-$IMAGE_NAME.sh
 
@@ -82,28 +84,28 @@ mv $build_home/build-$IMAGE_NAME.image $service_home/$IMAGE_NAME.image
 cp $build_home/*.sources $service_home
 mv $build_home/pharo-local $service_home/
 
-cp pharo-ctl.sh $service_home
+cp $script_home/pharo-ctl.sh $service_home
 
 echo Creating custom run/startup script
-process_template run.st.m4 $service_home/run-$SERVICE_NAME.st
+process_template $script_home/run.st.m4 $service_home/run-$SERVICE_NAME.st
 
 
 echo Creating custom REPL script
-process_template repl.sh.m4 $service_home/repl.sh
+process_template $script_home/repl.sh.m4 $service_home/repl.sh
 chmod +x $service_home/repl.sh
 
 
 echo Creating custom init.d script
-process_template init.d.m4 $service_home/init.d.script
+process_template $script_home/init.d.m4 $service_home/init.d.script
 chmod +x $service_home/init.d.script
 
 
 echo Creating custom systemd.service script
-process_template systemd.service.m4 $service_home/systemd.service.script
+process_template $script_home/systemd.service.m4 $service_home/systemd.service.script
 
 echo Creating custom monit services
-process_template monit-service-init.d.m4 $service_home/monit-service-init.d
-process_template monit-service-systemd.m4 $service_home/monit-service-systemd
+process_template $script_home/monit-service-init.d.m4 $service_home/monit-service-init.d
+process_template $script_home/monit-service-systemd.m4 $service_home/monit-service-systemd
 
 echo Done
 

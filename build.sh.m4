@@ -2,6 +2,8 @@
 
 script_home=$(dirname $0)
 script_home=$(cd $script_home && pwd)
+echo "Running from $script_home"
+
 vm=$script_home/../bin/pharo
 image=$script_home/build-_IMAGE_NAME_.image
 
