@@ -43,17 +43,31 @@ eval $(/usr/bin/ssh-agent -k)
 cat << EOF > $builddir/deploy.sh
 #!/bin/bash
 
-read -r -p $'You are about to deploy this build to ~/pharo/_SERVICE_NAME_.\nThis will overwrite existing .image and .changes files and pharo-local/ directory.\nContinue? [y/N] ' response
-if [[ "\$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+deploydir=~/pharo/_SERVICE_NAME_
+
+continue=true
+if [ -d \$deploydir/pharo-local ] || [ -e \$deploydir/_IMAGE_NAME_.image ] || [ -e \$deploydir/_IMAGE_NAME_.changes ]
+then
+
+    read -r -p $'You are about to deploy this build to ~/pharo/_SERVICE_NAME_.\nThis will overwrite existing .image and .changes files and pharo-local/ directory.\nContinue? [y/N] ' response
+    if [[ ! "\$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
+    then
+        continue=false
+        echo Cancelled.
+    fi
+fi
+
+if [ "\$continue" = "true" ]
+then
+
     echo Removing ~/pharo/_SERVICE_NAME_/pharo-local/ directory
     rm -rf ~/pharo/_SERVICE_NAME_/pharo-local
     echo Copying pharo-local/ directory
     cp -r pharo-local ~/pharo/_SERVICE_NAME_/
     echo Copying .image and .changes files
     cp -v _IMAGE_NAME_.* ~/pharo/_SERVICE_NAME_/
+
     echo Done.
-else
-    echo Cancelled.
 fi
 EOF
 chmod +x $builddir/deploy.sh
