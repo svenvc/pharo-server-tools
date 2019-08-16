@@ -9,7 +9,7 @@ vm=$script_home/../bin/pharo
 builddir=$script_home/_SERVICE_NAME_-$(date +%Y%d%m%H%M)
 mkdir -p $builddir
 
-image=$script_home/_IMAGE_NAME_.image
+image=$builddir/_IMAGE_NAME_.image
 $vm $script_home/Pharo.image save $builddir/_IMAGE_NAME_
 
 # Start SSH agent and add private key(s) for git authentication
