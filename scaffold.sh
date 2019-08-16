@@ -72,20 +72,17 @@ function process_template() {
 
 
 echo Creating custom build script
+process_template $script_home/build.sh.m4 $build_home/build-$SERVICE_NAME.sh
+chmod +x $build_home/build-$SERVICE_NAME.sh
 
-process_template $script_home/build.sh.m4 $build_home/build-$IMAGE_NAME.sh
 
-chmod +x $build_home/build-$IMAGE_NAME.sh
+# Currently not running build as part of scaffold
+# Run the deploy.sh script after running the build script manually.
+#$build_home/build-$SERVICE_NAME.sh
 
-$build_home/build-$IMAGE_NAME.sh
-
-# TODO Move these commands into build.sh.m4 and add checks if files exist (and if yes, rename to %d%m%y%h%m%s suffix)
-mv $build_home/build-$IMAGE_NAME.changes $service_home/$IMAGE_NAME.changes
-mv $build_home/build-$IMAGE_NAME.image $service_home/$IMAGE_NAME.image
-cp $build_home/*.sources $service_home
-mv $build_home/pharo-local $service_home/
 
 cp $script_home/pharo-ctl.sh $service_home
+
 
 echo Creating custom run/startup script
 process_template $script_home/run.st.m4 $service_home/run-$SERVICE_NAME.st
@@ -96,29 +93,26 @@ process_template $script_home/repl.sh.m4 $service_home/repl.sh
 chmod +x $service_home/repl.sh
 
 
-echo Creating custom init.d script
-process_template $script_home/init.d.m4 $service_home/init.d.script
-chmod +x $service_home/init.d.script
-
-
 echo Creating custom systemd.service script
 process_template $script_home/systemd.service.m4 $service_home/systemd.service.script
 
+
 echo Creating custom monit services
-process_template $script_home/monit-service-init.d.m4 $service_home/monit-service-init.d
 process_template $script_home/monit-service-systemd.m4 $service_home/monit-service-systemd
 
 echo Done
 
-echo To install the init.d script do
-echo sudo cp $service_home/init.d.script /etc/init.d/$SERVICE_NAME
-echo sudo update-rc.d $SERVICE_NAME defaults
-echo To install the monit service check for init.d do
-echo sudo cp $service_home/monit-service-init.d /etc/monit/conf.d/$SERVICE_NAME
-echo ""
+
+process_template $script_home/install_systemd.sh.m4 $service_home/install_systemd.sh
+chmod +x $service_home/install_systemd.sh
+process_template $script_home/remove_systemd.sh.m4 $service_home/remove_systemd.sh
+chmod +x $service_home/remove_systemd.sh
+
+
 echo To install the systemd.service script do
 echo sudo cp $service_home/systemd.service.script /etc/systemd/system/$SERVICE_NAME.service
 echo sudo systemctl daemon-reload
 echo sudo systemctl enable $SERVICE_NAME
-echo To install the monit service check for systemd do
+echo ""
+echo To install the monit service check do
 echo sudo cp $service_home/monit-service-systemd /etc/monit/conf.d/$SERVICE_NAME
