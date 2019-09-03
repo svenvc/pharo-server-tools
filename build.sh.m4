@@ -60,8 +60,12 @@ fi
 if [ "\$continue" = "true" ]
 then
 
-    echo Removing ~/pharo/_SERVICE_NAME_/pharo-local/ directory
-    rm -rf ~/pharo/_SERVICE_NAME_/pharo-local
+    if [ -d \$deploydir/pharo-local ]
+    then
+        echo Removing ~/pharo/_SERVICE_NAME_/pharo-local/ directory
+        rm -rf ~/pharo/_SERVICE_NAME_/pharo-local
+    fi
+
     echo Copying pharo-local/ directory
     cp -r pharo-local ~/pharo/_SERVICE_NAME_/
     echo Copying .image and .changes files
