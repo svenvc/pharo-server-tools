@@ -6,7 +6,7 @@ echo "Running from $script_home"
 
 vm=$script_home/../bin/pharo
 
-builddir=$script_home/_SERVICE_NAME_-$(date +%Y%d%m%H%M)
+builddir=$script_home/_SERVICE_NAME_-$(date +%Y%m%d%H%M)
 mkdir -p $builddir
 
 image=$builddir/_IMAGE_NAME_.image
