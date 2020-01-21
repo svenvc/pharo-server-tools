@@ -29,6 +29,30 @@ Metacello new
     onWarningLog;
     onConflictUseLoaded;
     load: '_CONFIG_GROUP_'.
+
+"Clean image and prepare for running headless."
+Smalltalk cleanUp: true except: {} confirming: false.
+World closeAllWindowsDiscardingChanges.
+Deprecation
+    raiseWarning: false;
+    showWarning: false.
+
+"<Disabled> CAUTION - Enable to run without sources and changes files:
+NoChangesLog install.
+NoPharoFilesOpener install.
+FFICompilerPlugin install.
+</Disabled>"
+
+"<Disabled> CAUTION - Remove tests and examples packages:
+RPackageOrganizer default packages
+    select: [ :p | #('Test' 'Example' 'Mock' 'Demo') anySatisfy: [ :aString | p name includesSubstring: aString ] ]
+    thenDo: #removeFromSystem.
+</Disabled>"
+
+EpMonitor reset.
+5 timesRepeat: [ Smalltalk garbageCollect ].
+
+WorldState serverMode: true.
 EOF
 
 cp Pharo*.sources $builddir/
