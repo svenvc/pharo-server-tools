@@ -80,6 +80,7 @@ chmod +x $build_home/build-$SERVICE_NAME.sh
 # Run the deploy.sh script after running the build script manually.
 #$build_home/build-$SERVICE_NAME.sh
 
+cp $build_home/Pharo7.0-*.sources $service_home
 
 cp $script_home/pharo-ctl.sh $service_home
 
