@@ -10,7 +10,7 @@ More specifically, Pharo 7 on Ubuntu 18.04 LTS server.
 
 The goal is to integrate well within the standard Linux world,
 
-- create an entry in `/etc/init.d` or `/etc/systemd/system/` for automatic start/stop/restart
+- create an entry in `/etc/systemd/system/` for automatic start/stop/restart
 - create an entry in `/etc/monit/conf.d` for monitoring with automatic restarts whenever the check fails
 - setup logging to daily files
 - setup secure REPL access to the running application
@@ -58,12 +58,15 @@ sudo apt-get install unzip
 It is assumed your whole application is packaged using 
 one single Metacello configuration that loads all dependencies.
 
-Note that if you want to use the REPL and HTTP monitoring features described here, you need to include NeoConsole as one of your dependencies.
+The default build script configures the REPL and HTTP monitoring 
+features described here, which have a dependency on NeoConsole. 
+Therefore it is automatically loaded before your project baseline. 
 
 ````
-baseline: 'NeoConsole' with: [
-  spec 
-    repository: 'github://svenvc/NeoConsole:master' ];
+Metacello new
+    repository: 'github://svenvc/NeoConsole:master';
+    baseline: 'NeoConsole';
+    load.
 ````
 
 Furthermore it is assumed that you have a script that actually
@@ -274,32 +277,10 @@ so that it will start automatically whenever your machine (re)starts.
 System administrators need this so called service entry to learn 
 about your application. We will reuse this feature ourselves later on as well.
 
-#### init.d
-
-To do this you have to create a script inside `/etc/init.d`.
-Copy the template and update the System V style RC init subsystem:
-
-````bash
-sudo cp ~/pharo-server-tools/init.d.template /etc/init.d/pharo-http-server
-sudo update-rc.d pharo-http-server defaults
-````
-
-Again, the script is more or less ready for our demo/tutorial.
-Check the variables at the top, you need to change the `user` in 
-the `PHDIR=` and `SU=` lines to the actual user you are using.
-
-If everything is well, Linux can now control your application.
-
-````bash
-sudo service pharo-http-server
-sudo service pharo-http-server start
-sudo service pharo-http-server stop
-````
 
 #### systemd
 
-Alternatively, you can use the newer systemd approach.
-To do this you have to create a script inside `/etc/systemd/system`.
+To use the newer systemd approach, you have to create a script inside `/etc/systemd/system`.
 Copy the template, reload the daemon and enable the service.
 
 ````bash

@@ -20,7 +20,7 @@ fi
 
 cat << EOF > $builddir/run-build.st
 Metacello new
-    repository: 'github://objectguild/NeoConsole:master';
+    repository: 'github://svenvc/NeoConsole:master';
     baseline: 'NeoConsole';
     load.
 Metacello new
