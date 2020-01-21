@@ -2,15 +2,29 @@
 script_home=$(dirname $0)
 script_home=$(cd $script_home && pwd)
 
+if [ -d ~/pharo/bin ]
+then
+
+    read -r -p $'You are about to re-install the Pharo runtime to ~/pharo/bin.\nThis will delete any existing files in that directory.\nContinue? [y/N] ' response
+    if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
+    then
+        echo Cancelled.
+	exit 1
+    fi
+fi
+
+rm -rfv ~/pharo/bin
+
 curl get.pharo.org/64/70+vm | bash
 rm $script_home/pharo-ui
 
-mkdir -p ~/pharo/bin ~/pharo/build
-mv $script_home/Pharo7.0-32bit-*.sources ~/pharo/build
+mkdir -p ~/pharo/build
+mv $script_home/Pharo7.0-*.sources ~/pharo/build
 mv $script_home/Pharo.changes ~/pharo/build
 mv $script_home/Pharo.image ~/pharo/build
-
 cp $script_home/build.sh ~/pharo/build
+
+mkdir -p ~/pharo/bin
 mv $script_home/pharo ~/pharo/bin
 mv $script_home/pharo-vm ~/pharo/bin
 

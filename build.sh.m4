@@ -69,7 +69,7 @@ then
     echo Copying pharo-local/ directory
     cp -r pharo-local ~/pharo/_SERVICE_NAME_/
     echo Copying .image and .changes files
-    cp -v _IMAGE_NAME_.* ~/pharo/_SERVICE_NAME_/
+    cp -bv _IMAGE_NAME_.* ~/pharo/_SERVICE_NAME_/
 
     echo Done.
 fi
