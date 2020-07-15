@@ -22,7 +22,7 @@ mkdir -p ~/pharo/build
 mv $script_home/Pharo7.0-*.sources ~/pharo/build
 mv $script_home/Pharo.changes ~/pharo/build
 mv $script_home/Pharo.image ~/pharo/build
-cp $script_home/build.sh ~/pharo/build
+cp $script_home/build.sh.template ~/pharo/build/build-template.sh
 
 mkdir -p ~/pharo/bin
 mv $script_home/pharo ~/pharo/bin
