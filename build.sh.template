@@ -16,6 +16,7 @@ $vm $script_home/Pharo.image save $builddir/${project}
 
 # Start SSH agent and add private key(s) for git authentication
 if [ -z "$SSH_AUTH_SOCK" ]; then
+    agent_started=true
     eval $(/usr/bin/ssh-agent)
 fi
 /usr/bin/ssh-add
@@ -31,7 +32,7 @@ Metacello new
     baseline: 'MyFirstProject';
     onWarningLog;
     onConflictUseLoaded;
-    load: 'Production'.
+    load: #( 'Production' ).
 
 "Clean image and prepare for running headless."
 Smalltalk cleanUp: true except: {} confirming: false.
@@ -65,7 +66,9 @@ $vm $project.image st --save --quit $builddir/run-build.st > $builddir/build.log
 cd $script_home
 
 # Kill SSH agent started earlier
-eval $(/usr/bin/ssh-agent -k)
+if [ "$agent_started" = "true" ]; then
+    eval $(/usr/bin/ssh-agent -k)
+fi
 
 # Print out a deploy script to copy the build result to the deployment directory
 cat << EOF > $builddir/deploy.sh
