@@ -23,8 +23,10 @@ fi
 
 # Print out Smalltalk script to run the build
 cat << EOF > $builddir/run-build.st
+"Disable Epicea monitor during loading of baseline(s)"
+EpMonitor current disable.
 Metacello new
-    repository: 'github://svenvc/NeoConsole:master';
+    repository: 'github://objectguild/NeoConsole:master';
     baseline: 'NeoConsole';
     load.
 Metacello new
@@ -55,6 +57,8 @@ EpMonitor reset.
 5 timesRepeat: [ Smalltalk garbageCollect ].
 
 WorldState serverMode: true.
+
+Transcript cr; show: 'Build finished'; cr.
 EOF
 
 # Copy required Pharo sources to build directory
@@ -73,6 +77,10 @@ fi
 # Print out a deploy script to copy the build result to the deployment directory
 cat << EOF > $builddir/deploy.sh
 #!/bin/bash
+
+script_home=\$(dirname \$0)
+script_home=\$(cd \$script_home && pwd)
+echo "Running from \$script_home"
 
 project=$project
 deploydir=~/pharo/\$project
@@ -100,15 +108,17 @@ then
 
     echo Backing up pharo-local/ directory
     mv -v \$deploydir/pharo-local \$backupdir/
+
     echo Copying new pharo-local/ directory
     cp -r pharo-local \$deploydir/
 
     echo Backing up .image and .changes files
     mv -v \$deploydir/\$project.image \$backupdir/
     mv -v \$deploydir/\$project.changes \$backupdir/
+
     echo Copying new .image and .changes files
-    cp -v \$project.image \$deploydir/
-    cp -v \$project.changes \$deploydir/
+    cp -v \$script_home/\$project.image \$deploydir/
+    cp -v \$script_home/\$project.changes \$deploydir/
 
     echo Done.
 fi
