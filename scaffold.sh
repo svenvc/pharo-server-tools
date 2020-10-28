@@ -48,7 +48,7 @@ fi
 
 service_home=~/pharo/$SERVICE_NAME
 
-mkdir -p $service_home
+mkdir -pv $service_home
 
 function process_template() {
     if [ "$#" -ne 2 ]; 
@@ -72,43 +72,34 @@ function process_template() {
 
 
 echo Creating custom build script
-process_template $script_home/build.sh.m4 $build_home/build-$SERVICE_NAME.sh
+process_template $script_home/build-_SERVICE_NAME_.sh.m4 $build_home/build-$SERVICE_NAME.sh
 chmod +x $build_home/build-$SERVICE_NAME.sh
+process_template $script_home/build.sh.m4 $service_home/build.sh
+chmod +x $service_home/build.sh
 
-
-# Currently not running build as part of scaffold
-# Run the deploy.sh script after running the build script manually.
-#$build_home/build-$SERVICE_NAME.sh
-
-cp $build_home/Pharo7.0-*.sources $service_home
-
+cp $build_home/Pharo*.sources $service_home
 cp $script_home/pharo-ctl.sh $service_home
 
 
 echo Creating custom run/startup script
 process_template $script_home/run.st.m4 $service_home/run-$SERVICE_NAME.st
 
-
 echo Creating custom REPL script
 process_template $script_home/repl.sh.m4 $service_home/repl.sh
 chmod +x $service_home/repl.sh
 
-
 echo Creating custom systemd.service script
 process_template $script_home/systemd.service.m4 $service_home/systemd.service.script
-
 
 echo Creating custom monit services
 process_template $script_home/monit-service-systemd.m4 $service_home/monit-service-systemd
 
 echo Done
 
-
 process_template $script_home/install_systemd.sh.m4 $service_home/install_systemd.sh
 chmod +x $service_home/install_systemd.sh
 process_template $script_home/remove_systemd.sh.m4 $service_home/remove_systemd.sh
 chmod +x $service_home/remove_systemd.sh
-
 
 echo To install the systemd.service script do
 echo sudo cp $service_home/systemd.service.script /etc/systemd/system/$SERVICE_NAME.service

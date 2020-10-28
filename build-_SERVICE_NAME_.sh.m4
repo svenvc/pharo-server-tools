@@ -6,13 +6,14 @@ echo "Running from $script_home"
 
 vm=$script_home/../bin/pharo
 
-project=MyFirstProject
+project=_SERVICE_NAME_
+
 # Define build directory using date/time and create
-builddir=$script_home/${project}-$(date +%Y%m%d%H%M)
+builddir=$script_home/$project-$(date +%Y%m%d%H%M)
 mkdir -pv $builddir
 
 # Save copy of Pharo base image to build directory
-$vm $script_home/Pharo.image save $builddir/${project}
+$vm $script_home/Pharo.image save $builddir/$project
 
 # Start SSH agent and add private key(s) for git authentication
 if [ -z "$SSH_AUTH_SOCK" ]; then
@@ -90,7 +91,7 @@ if [ -d \$deploydir/pharo-local ] || [ -e \$deploydir/\$project.image ] || [ -e 
 then
 
     read -r -p $"You are about to deploy this build to \$deploydir.
-This will overwrite existing .image and .changes files and pharo-local/ directory.
+This will move any existing .image and .changes files and pharo-local/ directory to a backup location.
 Continue? [y/N] " response
     if [[ ! "\$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
     then

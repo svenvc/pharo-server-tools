@@ -4,98 +4,44 @@ script_home=$(dirname $0)
 script_home=$(cd $script_home && pwd)
 echo "Running from $script_home"
 
-vm=$script_home/../bin/pharo
+project=_SERVICE_NAME_
 
-builddir=$script_home/_SERVICE_NAME_-$(date +%Y%m%d%H%M)
-mkdir -p $builddir
+build_home=$script_home/../build
+build_home=$(cd $build_home && pwd)
+echo "Will run semi-automatic build process for project: $project"
 
-image=$builddir/_IMAGE_NAME_.image
-$vm $script_home/Pharo.image save $builddir/_IMAGE_NAME_
-
-# Start SSH agent and add private key(s) for git authentication
-if [ -z "$SSH_AUTH_SOCK" ]; then
-    eval $(/usr/bin/ssh-agent)
-fi
-/usr/bin/ssh-add
-
-cat << EOF > $builddir/run-build.st
-Metacello new
-    repository: 'github://svenvc/NeoConsole:master';
-    baseline: 'NeoConsole';
-    load.
-Metacello new
-    repository: '_CONFIG_REPO_';
-    baseline: '_CONFIG_BASELINE_';
-    onWarningLog;
-    onConflictUseLoaded;
-    load: '_CONFIG_GROUP_'.
-
-"Clean image and prepare for running headless."
-Smalltalk cleanUp: true except: {} confirming: false.
-World closeAllWindowsDiscardingChanges.
-Deprecation
-    raiseWarning: false;
-    showWarning: false.
-
-"<Disabled> CAUTION - Enable to run without sources and changes files:
-NoChangesLog install.
-NoPharoFilesOpener install.
-FFICompilerPlugin install.
-</Disabled>"
-
-"<Disabled> CAUTION - Remove tests and examples packages:
-RPackageOrganizer default packages
-    select: [ :p | #('Test' 'Example' 'Mock' 'Demo') anySatisfy: [ :aString | p name includesSubstring: aString ] ]
-    thenDo: #removeFromSystem.
-</Disabled>"
-
-EpMonitor reset.
-5 timesRepeat: [ Smalltalk garbageCollect ].
-
-WorldState serverMode: true.
-EOF
-
-cp Pharo*.sources $builddir/
-
-cd $builddir
-$vm $image st --save --quit $builddir/run-build.st > $builddir/build.log 2>&1
-cd $script_home
-
-# Kill SSH agent started earlier
-eval $(/usr/bin/ssh-agent -k)
-
-cat << EOF > $builddir/deploy.sh
-#!/bin/bash
-
-deploydir=~/pharo/_SERVICE_NAME_
-
-continue=true
-if [ -d \$deploydir/pharo-local ] || [ -e \$deploydir/_IMAGE_NAME_.image ] || [ -e \$deploydir/_IMAGE_NAME_.changes ]
-then
-
-    read -r -p $'You are about to deploy this build to ~/pharo/_SERVICE_NAME_.\nThis will overwrite existing .image and .changes files and pharo-local/ directory.\nContinue? [y/N] ' response
-    if [[ ! "\$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
-    then
-        continue=false
-        echo Cancelled.
-    fi
+if [ ! -f $build_home/build-$project.sh ]; then
+  echo "Sorry, could not find build script: $build_home/build-$project.sh"
+  exit 1
 fi
 
-if [ "\$continue" = "true" ]
-then
+# Move old build directory to archive
+echo "Moving any old build directories to $build_home/_archive/"
+mkdir -p $build_home/_archive
+mv -v $build_home/$project-* $build_home/_archive/
 
-    if [ -d \$deploydir/pharo-local ]
-    then
-        echo Removing ~/pharo/_SERVICE_NAME_/pharo-local/ directory
-        rm -rf ~/pharo/_SERVICE_NAME_/pharo-local
-    fi
+# Start new build
+echo "Starting new build for project: $project"
+$build_home/build-$project.sh &
 
-    echo Copying pharo-local/ directory
-    cp -r pharo-local ~/pharo/_SERVICE_NAME_/
-    echo Copying .image and .changes files
-    cp -bv _IMAGE_NAME_.* ~/pharo/_SERVICE_NAME_/
+# Wait for new build directory and log file to be created
+echo "Waiting for build directory and log file to be created..."
+sleep 5
 
-    echo Done.
-fi
-EOF
-chmod +x $builddir/deploy.sh
+# Follow tail of build log
+echo "Tailing build log until finished"
+tail -f $(ls -d $build_home/$project-*)/build.log | sed '/^Build finished$/ q'
+
+echo "Waiting for deploy script to be generated..."
+while [ ! -f "$(ls -d $build_home/$project-*)/deploy.sh" ]; do
+  sleep 1
+done
+
+echo "Stopping $project service"
+sudo systemctl stop $project
+
+# Deploy
+$(ls -d $build_home/$project-*)/deploy.sh
+
+echo "Starting $project service"
+sudo systemctl start $project

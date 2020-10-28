@@ -15,14 +15,13 @@ fi
 
 rm -rfv ~/pharo/bin
 
-curl get.pharo.org/64/70+vm | bash
+curl get.pharo.org/64/80+vm | bash
 rm $script_home/pharo-ui
 
 mkdir -p ~/pharo/build
-mv $script_home/Pharo7.0-*.sources ~/pharo/build
+mv $script_home/Pharo*.sources ~/pharo/build
 mv $script_home/Pharo.changes ~/pharo/build
 mv $script_home/Pharo.image ~/pharo/build
-cp $script_home/build.sh.template ~/pharo/build/build-template.sh
 
 mkdir -p ~/pharo/bin
 mv $script_home/pharo ~/pharo/bin
