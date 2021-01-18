@@ -12,6 +12,7 @@ PIDFile=/home/_SERVICE_USER_/pharo/_SERVICE_NAME_/run-_SERVICE_NAME_.pid
 TimeoutSec=3
 LimitRTPRIO=2:2
 Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=default.target
