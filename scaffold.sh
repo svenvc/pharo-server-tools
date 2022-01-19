@@ -29,11 +29,10 @@ fi
 read -p "Description: " DESCRIPTION
 read -p "Metacello repository: " CONFIG_REPO
 read -p "Metacello baseline (excluding any 'BaselineOf' prefix): " CONFIG_BASELINE
-CONFIG_BASELINE=$CONFIG_BASELINE
 read -p "Metacello group (empty for 'default'): " CONFIG_GROUP
-if [ "$CONFIG_GROUPS" = '' ];
+if [ "$CONFIG_GROUP" = '' ];
 then
-    CONFIG_GROUPS=default
+    CONFIG_GROUP=default
 fi
 read -p "Telnet port (empty for 42001): " TELNET_PORT
 if [ "$TELNET_PORT" = '' ];
@@ -101,10 +100,7 @@ chmod +x $service_home/install_systemd.sh
 process_template $script_home/remove_systemd.sh.m4 $service_home/remove_systemd.sh
 chmod +x $service_home/remove_systemd.sh
 
-echo To install the systemd.service script do
-echo sudo cp $service_home/systemd.service.script /etc/systemd/system/$SERVICE_NAME.service
-echo sudo systemctl daemon-reload
-echo sudo systemctl enable $SERVICE_NAME
+echo To install $SERVICE_NAME as a systemd service, run $service_home/install_systemd.sh
 echo ""
 echo To install the monit service check do
 echo sudo cp $service_home/monit-service-systemd /etc/monit/conf.d/$SERVICE_NAME

@@ -15,12 +15,12 @@ mkdir -pv $builddir
 # Save copy of Pharo base image to build directory
 $vm $script_home/Pharo.image save $builddir/$project
 
-# Start SSH agent and add private key(s) for git authentication
+# If needed, start SSH agent and add private key(s) for git authentication
 if [ -z "$SSH_AUTH_SOCK" ]; then
-    agent_started=true
     eval $(/usr/bin/ssh-agent)
+    agent_started_by_me=true
+    /usr/bin/ssh-add
 fi
-/usr/bin/ssh-add
 
 # Print out Smalltalk script to run the build
 cat << EOF > $builddir/run-build.st
@@ -30,12 +30,22 @@ Metacello new
     repository: 'github://objectguild/NeoConsole:master';
     baseline: 'NeoConsole';
     load.
+
+"Hotfix to log git repository if we get a not found/authorized error."
+IceLibgitErrorVisitor compile: 'visitEEOF: aLGit_GIT_EEOF
+        aLGit_GIT_EEOF messageText trimmed = ''ERROR: Repository not found.''
+                ifTrue: [ IceCloneRemoteNotFound signalFor: context url ].
+        Transcript show: 'Error context repository: ' , context url asString; cr.
+        ^ self visitGenericError: aLGit_GIT_EEOF'.
+
 Metacello new
-    repository: 'gitlab://objectguild/group/MyFirstProject:v0.9';
-    baseline: 'MyFirstProject';
+    repository: '_CONFIG_REPO_';
+    baseline: '_CONFIG_BASELINE_';
     onWarningLog;
     onConflictUseLoaded;
-    load: #( 'Production' ).
+    load: #( "Intentional new line to allow replacement with M4"
+        '_CONFIG_GROUP_' 
+    ).
 
 "Clean image and prepare for running headless."
 Smalltalk cleanUp: true except: {} confirming: false.
@@ -70,8 +80,8 @@ cd $builddir
 $vm $project.image st --save --quit $builddir/run-build.st > $builddir/build.log 2>&1
 cd $script_home
 
-# Kill SSH agent started earlier
-if [ "$agent_started" = "true" ]; then
+# Kill SSH agent if started earlier
+if [ "$agent_started_by_me" = "true" ]; then
     eval $(/usr/bin/ssh-agent -k)
 fi
 
@@ -107,15 +117,23 @@ then
     echo Creating backup directory: \$backupdir
     mkdir -p \$backupdir
 
-    echo Backing up pharo-local/ directory
-    mv -v \$deploydir/pharo-local \$backupdir/
+    if [ -d \$deploydir/pharo-local ]
+    then
+
+        echo Backing up pharo-local/ directory
+        mv -v \$deploydir/pharo-local \$backupdir/
+    fi
 
     echo Copying new pharo-local/ directory
     cp -r pharo-local \$deploydir/
 
-    echo Backing up .image and .changes files
-    mv -v \$deploydir/\$project.image \$backupdir/
-    mv -v \$deploydir/\$project.changes \$backupdir/
+    if [ -e \$deploydir/\$project.image ] || [ -e \$deploydir/\$project.changes ]
+    then
+
+        echo Backing up .image and .changes files
+        mv -v \$deploydir/\$project.image \$backupdir/
+        mv -v \$deploydir/\$project.changes \$backupdir/
+    fi
 
     echo Copying new .image and .changes files
     cp -v \$script_home/\$project.image \$deploydir/
