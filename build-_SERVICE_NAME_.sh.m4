@@ -125,7 +125,7 @@ then
     fi
 
     echo Copying new pharo-local/ directory
-    cp -r pharo-local \$deploydir/
+    cp -r \$script_home/pharo-local \$deploydir/
 
     if [ -e \$deploydir/\$project.image ] || [ -e \$deploydir/\$project.changes ]
     then

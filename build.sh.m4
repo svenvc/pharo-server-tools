@@ -37,6 +37,7 @@ while [ ! -f "$(ls -d $build_home/$project-*)/deploy.sh" ]; do
   sleep 1
 done
 
+echo "Deployment phase (requires sudo)"
 echo "Stopping $project service"
 sudo systemctl stop $project
 
