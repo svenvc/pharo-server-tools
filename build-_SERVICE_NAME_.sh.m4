@@ -27,7 +27,7 @@ cat << EOF > $builddir/run-build.st
 "Disable Epicea monitor during loading of baseline(s)"
 EpMonitor current disable.
 Metacello new
-    repository: 'github://objectguild/NeoConsole:master';
+    repository: 'github://svenvc/NeoConsole:master';
     baseline: 'NeoConsole';
     load.
 
