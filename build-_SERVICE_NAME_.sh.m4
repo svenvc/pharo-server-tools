@@ -35,7 +35,7 @@ Metacello new
 IceLibgitErrorVisitor compile: 'visitEEOF: aLGit_GIT_EEOF
         aLGit_GIT_EEOF messageText trimmed = ''ERROR: Repository not found.''
                 ifTrue: [ IceCloneRemoteNotFound signalFor: context url ].
-        Transcript show: 'Error context repository: ' , context url asString; cr.
+        Transcript show: ''Error context repository: '' , context url asString; cr.
         ^ self visitGenericError: aLGit_GIT_EEOF'.
 
 Metacello new
