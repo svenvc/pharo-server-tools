@@ -34,6 +34,16 @@ if [ "$CONFIG_GROUP" = '' ];
 then
     CONFIG_GROUP=default
 fi
+read -p "Host prefix (empty for service name): " HOST_PREFIX
+if [ "$HOST_PREFIX" = '' ];
+then
+    HOST_PREFIX=$SERVICE_NAME
+fi
+read -p "HTTP proxy port (empty for 8080): " PROXY_PORT
+if [ "$PROXY_PORT" = '' ];
+then
+    PROXY_PORT=8080
+fi
 read -p "Telnet port (empty for 42001): " TELNET_PORT
 if [ "$TELNET_PORT" = '' ];
 then
@@ -63,6 +73,8 @@ function process_template() {
     -D_CONFIG_REPO_=$CONFIG_REPO \
     -D_CONFIG_BASELINE_=$CONFIG_BASELINE \
     -D_CONFIG_GROUP_=$CONFIG_GROUP \
+    -D_HOST_PREFIX_=$HOST_PREFIX \
+    -D_PROXY_PORT_=$PROXY_PORT \
     -D_TELNET_PORT_=$TELNET_PORT \
     -D_METRICS_PORT_=$METRICS_PORT \
     $1 \
@@ -90,6 +102,9 @@ chmod +x $service_home/repl.sh
 echo Creating custom systemd.service script
 process_template $script_home/systemd.service.m4 $service_home/systemd.service.script
 
+echo Creating custom nginx site configuration
+process_template $script_home/nginx-site.m4 $service_home/nginx-site
+
 echo Creating custom monit services
 process_template $script_home/monit-service-systemd.m4 $service_home/monit-service-systemd
 
@@ -102,5 +117,15 @@ chmod +x $service_home/remove_systemd.sh
 
 echo To install $SERVICE_NAME as a systemd service, run $service_home/install_systemd.sh
 echo ""
+echo To install the nginx site do
+echo sudo ln -s $service_home/nginx-site /etc/nginx/sites-available/$SERVICE_NAME
+echo ""
+
+if [ -z /etc/nginx/conf.d/proxy_websockets.conf ];
+then
+    echo Adding nginx proxy websockets configuration
+    sudo cp $script_home/proxy_websockets.conf /etc/nginx/conf.d/
+fi
+
 echo To install the monit service check do
 echo sudo cp $service_home/monit-service-systemd /etc/monit/conf.d/$SERVICE_NAME
