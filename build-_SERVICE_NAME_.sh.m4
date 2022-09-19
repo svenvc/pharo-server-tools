@@ -31,6 +31,16 @@ Metacello new
     baseline: 'NeoConsole';
     load.
 
+"Hotfix to log remote url in case of authentication error."
+MCGitBasedNetworkRepository compile: 'createIcebergRepositoryWithFallbackFor: remote url: remoteUrl
+	| urlToUse  |
+	urlToUse := remoteUrl.
+	[ ^ self createIcebergRepositoryFor: urlToUse ]
+	on: IceAuthenticationError do: [ :e |
+		self crLog: (''I got an error while cloning: {1}. I will try to clone the HTTPS variant.
+{2}'' format: { remoteUrl. e messageText }). 
+		urlToUse := remote httpsUrl.
+		e retry ]'.
 "Hotfix to log git repository if we get a not found/authorized error."
 IceLibgitErrorVisitor compile: 'visitEEOF: aLGit_GIT_EEOF
         aLGit_GIT_EEOF messageText trimmed = ''ERROR: Repository not found.''
