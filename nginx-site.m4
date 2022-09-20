@@ -15,6 +15,10 @@ server {
     root /var/www/_SERVICE_NAME_/html;
     index index.html;
 
+    location = / {
+        rewrite ^.*$ /app.html?_SERVICE_NAME_ permanent;
+    }
+
     charset utf-8;
 
     access_log /var/www/_SERVICE_NAME_/logs/access.log;
