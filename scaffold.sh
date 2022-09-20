@@ -117,8 +117,8 @@ chmod +x $service_home/remove_systemd.sh
 
 echo To install $SERVICE_NAME as a systemd service, run $service_home/install_systemd.sh
 echo ""
-echo To install the nginx site do
-echo sudo ln -s $service_home/nginx-site /etc/nginx/sites-available/$SERVICE_NAME
+echo To install/enable the nginx site do
+echo sudo ln -s $service_home/nginx-site /etc/nginx/sites-enable/$SERVICE_NAME
 echo ""
 
 if [ -z /etc/nginx/conf.d/proxy_websockets.conf ];
