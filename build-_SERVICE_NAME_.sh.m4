@@ -16,8 +16,9 @@ mkdir -pv $builddir
 $vm $script_home/Pharo.image save $builddir/$project
 
 # If needed, start SSH agent and add private key(s) for git authentication
-if [ -z "$SSH_AUTH_SOCK" ]; then
+if [ -z "$SSH_AUTH_SOCK" ] || [ ! -e "$SSH_AUTH_SOCK" ]; then
     eval $(/usr/bin/ssh-agent)
+    echo Started SSH agent myself
     agent_started_by_me=true
     /usr/bin/ssh-add
 fi
@@ -93,6 +94,7 @@ cd $script_home
 # Kill SSH agent if started earlier
 if [ "$agent_started_by_me" = "true" ]; then
     eval $(/usr/bin/ssh-agent -k)
+    echo Stopped SSH agent started by me
 fi
 
 # Print out a deploy script to copy the build result to the deployment directory
