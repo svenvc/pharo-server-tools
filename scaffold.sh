@@ -110,10 +110,10 @@ process_template $script_home/monit-service-systemd.m4 $service_home/monit-servi
 
 echo Done
 
-process_template $script_home/install_systemd.sh.m4 $service_home/install_systemd.sh
-chmod +x $service_home/install_systemd.sh
-process_template $script_home/remove_systemd.sh.m4 $service_home/remove_systemd.sh
-chmod +x $service_home/remove_systemd.sh
+process_template $script_home/systemd_install.sh.m4 $service_home/systemd_install.sh
+chmod +x $service_home/systemd_install.sh
+process_template $script_home/systemd_remove.sh.m4 $service_home/systemd_remove.sh
+chmod +x $service_home/systemd_remove.sh
 
 echo To install $SERVICE_NAME as a systemd service, run $service_home/install_systemd.sh
 echo ""
