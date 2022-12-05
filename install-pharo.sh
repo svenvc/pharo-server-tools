@@ -29,3 +29,7 @@ mv $script_home/pharo-vm ~/pharo/bin
 
 echo "Successfully installed the following Pharo runtime:"
 ~/pharo/bin/pharo ~/pharo/build/Pharo.image printVersion
+
+echo "Copying systemd unit status alert service"
+sudo cp unit-status-alert@.service /etc/systemd/system/
+sudo systemctl daemon-reload
