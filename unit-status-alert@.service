@@ -1,0 +1,11 @@
+# Inspired by Northern Light Labs article
+# https://northernlightlabs.se/2014-07-05/systemd-status-mail-on-unit-failure.html
+
+[Unit]
+Description=Unit Status Alert Service
+After=network.target
+
+[Service]
+Type=simple
+# Look here for more specifiers: https://www.freedesktop.org/software/systemd/man/systemd.unit.html#Specifiers
+ExecStart=/usr/local/sbin/unit_status_alert.sh "Instance: %I, Hostname: %H"
