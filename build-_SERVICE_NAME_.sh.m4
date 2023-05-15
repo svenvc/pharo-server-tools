@@ -4,7 +4,9 @@ script_home=$(dirname $0)
 script_home=$(cd $script_home && pwd)
 echo "Running from $script_home"
 
-vm=$script_home/../bin/pharo
+# Assume we're using Pharo 11.0 runtime
+vm_home=$script_home/../lib/11.0
+vm=$vm_home/pharo
 
 project=_SERVICE_NAME_
 
@@ -13,7 +15,7 @@ builddir=$script_home/$project-$(date +%Y%m%d%H%M)
 mkdir -pv $builddir
 
 # Save copy of Pharo base image to build directory
-$vm $script_home/Pharo.image save $builddir/$project
+$vm $vm_home/Pharo.image save $builddir/$project
 
 # If needed, start SSH agent and add private key(s) for git authentication
 if [ -z "$SSH_AUTH_SOCK" ] || [ ! -e "$SSH_AUTH_SOCK" ]; then
@@ -32,21 +34,26 @@ Metacello new
     baseline: 'NeoConsole';
     load.
 
+Metacello new 
+    repository: 'github://objectguild/baseline-version-mapping:main' ;
+    baseline: 'VersionMapping' ;
+    load.
+
 "Hotfix to log remote url in case of authentication error."
 MCGitBasedNetworkRepository compile: 'createIcebergRepositoryWithFallbackFor: remote url: remoteUrl
 	| urlToUse  |
 	urlToUse := remoteUrl.
 	[ ^ self createIcebergRepositoryFor: urlToUse ]
 	on: IceAuthenticationError do: [ :e |
-		self crLog: (''I got an error while cloning: {1}. I will try to clone the HTTPS variant.
+		self traceCr: (''I got an error while cloning: {1}. I will try to clone the HTTPS variant.
 {2}'' format: { remoteUrl. e messageText }). 
 		urlToUse := remote httpsUrl.
-		e retry ]'.
+		^ self createIcebergRepositoryFor: urlToUse ]'.
 "Hotfix to log git repository if we get a not found/authorized error."
 IceLibgitErrorVisitor compile: 'visitEEOF: aLGit_GIT_EEOF
         aLGit_GIT_EEOF messageText trimmed = ''ERROR: Repository not found.''
                 ifTrue: [ IceCloneRemoteNotFound signalFor: context url ].
-        Transcript show: ''Error context repository: '' , context url asString; cr.
+        self traceCr: ''Error context repository: '' , context url asString.
         ^ self visitGenericError: aLGit_GIT_EEOF'.
 
 Metacello new
@@ -84,7 +91,7 @@ Transcript cr; show: 'Build finished'; cr.
 EOF
 
 # Copy required Pharo sources to build directory
-cp Pharo*.sources $builddir/
+cp $vm_home/Pharo*.sources $builddir/
 
 # Actually run the build, saving and exiting the image, while redirecting output to a build log file
 cd $builddir

@@ -4,7 +4,9 @@ script_home=$(dirname $0)
 script_home=$(cd $script_home && pwd)
 echo "Running from $script_home"
 
-vm=~/pharo/bin/pharo
+# Assume we're using Pharo 11.0 runtime
+vm_home=~/pharo/lib/11.0
+vm=$vm_home/pharo
 build_home=~/pharo/build
 
 if [ -d $build_home ];
@@ -88,7 +90,7 @@ chmod +x $build_home/build-$SERVICE_NAME.sh
 process_template $script_home/build.sh.m4 $service_home/build.sh
 chmod +x $service_home/build.sh
 
-cp $build_home/Pharo*.sources $service_home
+cp $vm_home/Pharo*.sources $service_home
 cp $script_home/pharo-ctl.sh $service_home
 
 

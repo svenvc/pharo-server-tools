@@ -49,23 +49,24 @@ fi
 
 pid_file="$script_home/$script.pid"
 
-vm=$script_home/../bin/pharo-vm/pharo
-options="--vm-display-null"
+vm_home=$script_home/../lib/11.0
+vm=$vm_home/pharo
+vm_options=""
 
 function start() {
     echo Starting $script in background
     if [ -e "$pid_file" ]; then
 	rm -f $pid_file
     fi
-    echo $vm $options $image $st_file
-    $vm $options $image $st_file 2>&1 >/dev/null &
+    echo $vm $vm_options $image $st_file
+    $vm $vm_options $image $st_file 2>&1 >/dev/null &
     echo $! >$pid_file
 }
 
 function run() {
     echo Running $script in foreground
-    echo $vm $options $image $st_file
-    $vm $options $image $st_file
+    echo $vm $vm_options $image $st_file
+    $vm $vm_options $image $st_file
 }
 
 function stop() {

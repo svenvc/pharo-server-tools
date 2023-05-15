@@ -2,34 +2,42 @@
 script_home=$(dirname $0)
 script_home=$(cd $script_home && pwd)
 
-if [ -d ~/pharo/bin ]
+vm_version=11.0
+vm_home=~/pharo/lib_test/$vm_version
+
+if [ -d $vm_home ]
 then
 
-    read -r -p $'You are about to re-install the Pharo runtime to ~/pharo/bin.\nThis will delete any existing files in that directory.\nContinue? [y/N] ' response
+    read -r -p $'You are about to re-install the Pharo $vm_version runtime to $vm_home.\nThis will delete any existing files in that directory.\nContinue? [y/N] ' response
     if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
     then
         echo Cancelled.
 	exit 1
     fi
+
+    # Remove directory recursively
+    rm -rfv $vm_home
 fi
 
-rm -rfv ~/pharo/bin
+echo "Downloading and installing Pharo $vm_version runtime"
+# Ensure directory exists
+mkdir -p $vm_home
+cd $vm_home
 
-curl get.pharo.org/64/80+vm | bash
-rm $script_home/pharo-ui
+zeroconf_url=https://get.pharo.org/64/${vm_version/\./}+vm
+curl $zeroconf_url | bash
+
+# Remove script to run interactive / headful mode (unused)
+rm $vm_home/pharo-ui
 
 mkdir -p ~/pharo/build
-mv $script_home/Pharo*.sources ~/pharo/build
-mv $script_home/Pharo.changes ~/pharo/build
-mv $script_home/Pharo.image ~/pharo/build
-
-mkdir -p ~/pharo/bin
-mv $script_home/pharo ~/pharo/bin
-mv $script_home/pharo-vm ~/pharo/bin
 
 echo "Successfully installed the following Pharo runtime:"
-~/pharo/bin/pharo ~/pharo/build/Pharo.image printVersion
+$vm_home/pharo $vm_home/Pharo.image printVersion
 
-echo "Copying systemd unit status alert service"
-sudo cp unit-status-alert@.service /etc/systemd/system/
-sudo systemctl daemon-reload
+if [ ! -e /etc/systemd/system/unit-status-alert@.service ]
+then
+	echo "Copying systemd unit status alert service"
+	sudo cp unit-status-alert@.service /etc/systemd/system/
+	sudo systemctl daemon-reload
+fi

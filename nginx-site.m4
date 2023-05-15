@@ -1,7 +1,7 @@
 
-# Nginx configuration for Unanym Expressive System
+# Nginx configuration for Pharo web application
 
-upstream expressivesystem {
+upstream pharo {
 
     server 127.0.0.1:_PROXY_PORT_;
 }
@@ -28,7 +28,7 @@ server {
     # Additional context: https://docs.nginx.com/nginx/deployment-guides/load-balance-third-party/node-js/#configuring-load-balancing-of-websocket-traffic
 
     location /io {
-        proxy_pass http://expressivesystem;
+        proxy_pass http://pharo;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
