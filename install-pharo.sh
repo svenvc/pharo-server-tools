@@ -3,7 +3,7 @@ script_home=$(dirname $0)
 script_home=$(cd $script_home && pwd)
 
 vm_version=11.0
-vm_home=~/pharo/lib_test/$vm_version
+vm_home=~/pharo/lib/$vm_version
 
 if [ -d $vm_home ]
 then
