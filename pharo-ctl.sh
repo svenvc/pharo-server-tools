@@ -49,9 +49,11 @@ fi
 
 pid_file="$script_home/$script.pid"
 
-vm_home=$script_home/../lib/11.0
-vm=$vm_home/pharo
-vm_options=""
+# Assume we're using Pharo 11.0 runtime
+vm_home=$(/usr/bin/realpath $script_home/../lib/11.0)
+# Using lower level script to make sure 'ps' lists only 1 process
+vm=$vm_home/pharo-vm/pharo
+vm_options="--headless"
 
 function start() {
     echo Starting $script in background

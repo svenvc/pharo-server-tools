@@ -5,7 +5,7 @@ script_home=$(cd $script_home && pwd)
 echo "Running from $script_home"
 
 # Assume we're using Pharo 11.0 runtime
-vm_home=$script_home/../lib/11.0
+vm_home=$(/usr/bin/realpath $script_home/../lib/11.0)
 vm=$vm_home/pharo
 
 project=_SERVICE_NAME_
@@ -19,10 +19,12 @@ $vm $vm_home/Pharo.image save $builddir/$project
 
 # If needed, start SSH agent and add private key(s) for git authentication
 if [ -z "$SSH_AUTH_SOCK" ] || [ ! -e "$SSH_AUTH_SOCK" ]; then
+    echo Starting SSH agent myself
     eval $(/usr/bin/ssh-agent)
-    echo Started SSH agent myself
     agent_started_by_me=true
     /usr/bin/ssh-add
+else 
+    echo SSH agent already running
 fi
 
 # Print out Smalltalk script to run the build
