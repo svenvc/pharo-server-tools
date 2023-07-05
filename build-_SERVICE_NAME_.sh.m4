@@ -4,9 +4,21 @@ script_home=$(dirname $0)
 script_home=$(cd $script_home && pwd)
 echo "Running from $script_home"
 
-# Assume we're using Pharo 11.0 runtime
-vm_home=$(/usr/bin/realpath $script_home/../lib/11.0)
-vm=$vm_home/pharo
+# If needed, modify VM version here
+vm_version_short=8
+
+# Some magick to switch VM options by version
+# See https://stackoverflow.com/a/18124325
+vm_version="$vm_version_short.0"
+vm_options_8="--vm-display-null"
+vm_options_9="--headless"
+vm_options_10="--headless"
+vm_options_11="--headless"
+vm_options_var=vm_options_$vm_version_short
+vm_options=${!vm_options_var}
+
+vm_home=$(/usr/bin/realpath $script_home/../lib/$vm_version)
+vm=$vm_home/pharo-vm/pharo
 
 project=_SERVICE_NAME_
 
@@ -15,7 +27,7 @@ builddir=$script_home/$project-$(date +%Y%m%d%H%M)
 mkdir -pv $builddir
 
 # Save copy of Pharo base image to build directory
-$vm $vm_home/Pharo.image save $builddir/$project
+$vm $vm_options $vm_home/Pharo.image save $builddir/$project
 
 # If needed, start SSH agent and add private key(s) for git authentication
 if [ -z "$SSH_AUTH_SOCK" ] || [ ! -e "$SSH_AUTH_SOCK" ]; then
@@ -97,7 +109,7 @@ cp $vm_home/Pharo*.sources $builddir/
 
 # Actually run the build, saving and exiting the image, while redirecting output to a build log file
 cd $builddir
-$vm $project.image st --save --quit $builddir/run-build.st > $builddir/build.log 2>&1
+$vm $vm_options $project.image st --save --quit $builddir/run-build.st > $builddir/build.log 2>&1
 cd $script_home
 
 # Kill SSH agent if started earlier
@@ -159,6 +171,9 @@ then
     echo Copying new .image and .changes files
     cp -v \$script_home/\$project.image \$deploydir/
     cp -v \$script_home/\$project.changes \$deploydir/
+
+    echo Copy Pharo sources "(if needed)"
+    cp -vn \$script_home/Pharo*.sources \$deploydir/
 
     echo Done.
 fi

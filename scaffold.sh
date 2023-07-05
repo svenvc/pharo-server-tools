@@ -4,9 +4,22 @@ script_home=$(dirname $0)
 script_home=$(cd $script_home && pwd)
 echo "Running from $script_home"
 
-# Assume we're using Pharo 11.0 runtime
-vm_home=~/pharo/lib/11.0
-vm=$vm_home/pharo
+# If needed, modify VM version here
+vm_version_short=8
+
+# Some magick to switch VM options by version
+# See https://stackoverflow.com/a/18124325
+vm_version="$vm_version_short.0"
+vm_options_8="--vm-display-null"
+vm_options_9="--headless"
+vm_options_10="--headless"
+vm_options_11="--headless"
+vm_options_var=vm_options_$vm_version_short
+vm_options=${!vm_options_var}
+
+vm_home=$(/usr/bin/realpath $script_home/../lib/$vm_version)
+vm=$vm_home/pharo-vm/pharo
+
 build_home=~/pharo/build
 
 if [ -d $build_home ];
@@ -117,10 +130,13 @@ chmod +x $service_home/systemd_install.sh
 process_template $script_home/systemd_remove.sh.m4 $service_home/systemd_remove.sh
 chmod +x $service_home/systemd_remove.sh
 
-echo To install $SERVICE_NAME as a systemd service, run $service_home/install_systemd.sh
+echo To install $SERVICE_NAME as a systemd service, run $service_home/systemd_install.sh
 echo ""
 echo To install/enable the nginx site do
-echo sudo ln -s $service_home/nginx-site /etc/nginx/sites-enable/$SERVICE_NAME
+echo sudo ln -s $service_home/nginx-site /etc/nginx/sites-enabled/$SERVICE_NAME
+echo sudo mkdir -p /var/www/$SERVICE_NAME/logs
+echo sudo ln -s /home/pharo/pharo/$SERVICE_NAME/pharo-local/iceberg/ErikOnBike/CP-ClientEnvironment/html
+echo sudo certbot run --non-interactive --nginx -d $SERVICE_NAME.objectguild.com
 echo ""
 
 if [ -z /etc/nginx/conf.d/proxy_websockets.conf ];
