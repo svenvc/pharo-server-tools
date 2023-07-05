@@ -19,6 +19,10 @@ server {
         rewrite ^.*$ /app.html?_SERVICE_NAME_ permanent;
     }
 
+    location /images/ {
+        alias /home/pharo/pharo/_SERVICE_NAME_/pharo-local/iceberg/clients/_SERVICE_NAME_/html/images/;
+    }
+
     charset utf-8;
 
     access_log /var/www/_SERVICE_NAME_/logs/access.log;
