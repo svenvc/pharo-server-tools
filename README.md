@@ -6,11 +6,11 @@ Tools to deploy and manage headless Pharo servers from the command line.
 ## Goal
 
 To deploy and manage a Pharo based server application on a Linux system.
-More specifically, Pharo 4 on Ubuntu 14.04 LTS server.
+More specifically, Pharo 7 on Ubuntu 18.04 LTS server.
 
 The goal is to integrate well within the standard Linux world,
 
-- create an entry in `/etc/init.d` or `/etc/systemd/system/` for automatic start/stop/restart
+- create an entry in `/etc/systemd/system/` for automatic start/stop/restart
 - create an entry in `/etc/monit/conf.d` for monitoring with automatic restarts whenever the check fails
 - setup logging to daily files
 - setup secure REPL access to the running application
@@ -32,7 +32,7 @@ You will need to install git first
 
 ````bash
 sudo apt-get install git-core 
-git clone https://github.com/svenvc/pharo-server-tools.git
+git clone https://github.com/objectguild/pharo-server-tools.git
 ````
 
 The following directory structure is used
@@ -44,7 +44,7 @@ The following directory structure is used
 ~/pharo/build
 ````
 
-The script `install-pharo.sh` will download a Pharo 4 image + VM
+The script `install-pharo.sh` will download a Pharo 7 image + VM
 and move things around to create the directory structure.
 This has to be done only once. You will need to install unzip.
 
@@ -53,35 +53,20 @@ sudo apt-get install unzip
 ~/pharo-server-tools/install-pharo.sh
 ````
 
-You can use both a 32 or 64 bit Ubuntu distribution.
-However, since the Pharo VM is still a 32 bit application, 
-you will need to install some extra libraries in that case.
-
-The standard instructions are
-
-````bash
-sudo dpkg --add-architecture i386
-sudo apt-get update
-sudo apt-get install libc6:i386
-sudo apt-get install libssl1.0.0:i386
-sudo apt-get install libfreetype6:i386
-````
-
-You can use the script `ubuntu-32bit-support-on-64bit.sh` for this.
-
-
 ## Server Application
 
 It is assumed your whole application is packaged using 
 one single Metacello configuration that loads all dependencies.
 
-Note that if you want to use the REPL and HTTP monitoring features described here, you need to include NeoConsole as one of your dependencies.
+The default build script configures the REPL and HTTP monitoring 
+features described here, which have a dependency on NeoConsole. 
+Therefore it is automatically loaded before your project baseline. 
 
 ````
-project: 'NeoConsole' with: [
-  spec 
-    className: 'ConfigurationOfNeoConsole';
-    repository: 'http://mc.stfx.eu/Neo' ];
+Metacello new
+    repository: 'github://svenvc/NeoConsole:master';
+    baseline: 'NeoConsole';
+    load.
 ````
 
 Furthermore it is assumed that you have a script that actually
@@ -109,11 +94,8 @@ Service name: pharo-http-server
 Image name (empty for service name): 
 User (empty for current user): 
 Description: Pharo HTTP Server
-Metacello repository: http://mc.stfx.eu/Neo
-Metacello name: ConfigurationOfNeoConsole
-Metacello user (empty for none): 
-Metacello password (empty for none): 
-Metacello version (empty for stable): 
+Metacello repository: github://svenvc/NeoConsole:master
+Metacello baseline (excluding any 'BaselineOf' prefix): NeoConsole
 Metacello group (empty for default): 
 Telnet port (empty for 42001): 
 Metrics port (empty for 42002): 
@@ -245,7 +227,7 @@ Execute it without arguments for help
 ````bash
 ./pharo-ctl.sh 
 Executing ./pharo-ctl.sh
-Working directory /home/sven/pharo/pharo-http-server
+Working directory /home/t3/pharo/pharo-http-server
 Usage: ./pharo-ctl.sh <script> <command> <image>
     manage a Pharo server
 Naming
@@ -295,32 +277,10 @@ so that it will start automatically whenever your machine (re)starts.
 System administrators need this so called service entry to learn 
 about your application. We will reuse this feature ourselves later on as well.
 
-#### init.d
-
-To do this you have to create a script inside `/etc/init.d`.
-Copy the template and update the System V style RC init subsystem:
-
-````bash
-sudo cp ~/pharo-server-tools/init.d.template /etc/init.d/pharo-http-server
-sudo update-rc.d pharo-http-server defaults
-````
-
-Again, the script is more or less ready for our demo/tutorial.
-Check the variables at the top, you need to change the `user` in 
-the `PHDIR=` and `SU=` lines to the actual user you are using.
-
-If everything is well, Linux can now control your application.
-
-````bash
-sudo service pharo-http-server
-sudo service pharo-http-server start
-sudo service pharo-http-server stop
-````
 
 #### systemd
 
-Alternatively, you can use the newer systemd approach.
-To do this you have to create a script inside `/etc/systemd/system`.
+To use the newer systemd approach, you have to create a script inside `/etc/systemd/system`.
 Copy the template, reload the daemon and enable the service.
 
 ````bash

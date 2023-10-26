@@ -49,23 +49,37 @@ fi
 
 pid_file="$script_home/$script.pid"
 
-vm=$script_home/../bin/pharo-vm/pharo
-options="--nodisplay"
+# If needed, modify VM version here
+vm_version_short=8
+
+# Some magick to switch VM options by version
+# See https://stackoverflow.com/a/18124325
+vm_version="$vm_version_short.0"
+vm_options_8="--vm-display-null"
+vm_options_9="--headless"
+vm_options_10="--headless"
+vm_options_11="--headless"
+vm_options_var=vm_options_$vm_version_short
+vm_options=${!vm_options_var}
+
+vm_home=$(/usr/bin/realpath $script_home/../lib/$vm_version)
+# Using lower level script to make sure 'ps' lists only 1 process
+vm=$vm_home/pharo-vm/pharo
 
 function start() {
     echo Starting $script in background
     if [ -e "$pid_file" ]; then
 	rm -f $pid_file
     fi
-    echo $vm $options $image $st_file
-    $vm $options $image $st_file 2>&1 >/dev/null &
+    echo $vm $vm_options $image $st_file
+    $vm $vm_options $image $st_file 2>&1 >/dev/null &
     echo $! >$pid_file
 }
 
 function run() {
     echo Running $script in foreground
-    echo $vm $options $image $st_file
-    $vm $options $image $st_file
+    echo $vm $vm_options $image $st_file
+    $vm $vm_options $image $st_file
 }
 
 function stop() {

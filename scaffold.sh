@@ -2,7 +2,24 @@
 
 script_home=$(dirname $0)
 script_home=$(cd $script_home && pwd)
-vm=~/pharo/bin/pharo
+echo "Running from $script_home"
+
+# If needed, modify VM version here
+vm_version_short=8
+
+# Some magick to switch VM options by version
+# See https://stackoverflow.com/a/18124325
+vm_version="$vm_version_short.0"
+vm_options_8="--vm-display-null"
+vm_options_9="--headless"
+vm_options_10="--headless"
+vm_options_11="--headless"
+vm_options_var=vm_options_$vm_version_short
+vm_options=${!vm_options_var}
+
+vm_home=$(/usr/bin/realpath $script_home/../lib/$vm_version)
+vm=$vm_home/pharo-vm/pharo
+
 build_home=~/pharo/build
 
 if [ -d $build_home ];
@@ -26,18 +43,21 @@ then
 fi
 read -p "Description: " DESCRIPTION
 read -p "Metacello repository: " CONFIG_REPO
-read -p "Metacello name: " CONFIG_NAME
-read -p "Metacello user (empty for none): " CONFIG_USER
-read -p "Metacello password (empty for none): " CONFIG_PASS
-read -p "Metacello version (empty for stable): " CONFIG_VERSION
-if [ "$CONFIG_VERSION" = '' ];
-then
-    CONFIG_VERSION=stable
-fi
-read -p "Metacello group (empty for default): " CONFIG_GROUP
+read -p "Metacello baseline (excluding any 'BaselineOf' prefix): " CONFIG_BASELINE
+read -p "Metacello group (empty for 'default'): " CONFIG_GROUP
 if [ "$CONFIG_GROUP" = '' ];
 then
     CONFIG_GROUP=default
+fi
+read -p "Host prefix (empty for service name): " HOST_PREFIX
+if [ "$HOST_PREFIX" = '' ];
+then
+    HOST_PREFIX=$SERVICE_NAME
+fi
+read -p "HTTP proxy port (empty for 8080): " PROXY_PORT
+if [ "$PROXY_PORT" = '' ];
+then
+    PROXY_PORT=8080
 fi
 read -p "Telnet port (empty for 42001): " TELNET_PORT
 if [ "$TELNET_PORT" = '' ];
@@ -52,7 +72,7 @@ fi
 
 service_home=~/pharo/$SERVICE_NAME
 
-mkdir -p $service_home
+mkdir -pv $service_home
 
 function process_template() {
     if [ "$#" -ne 2 ]; 
@@ -66,11 +86,10 @@ function process_template() {
     -D_SERVICE_USER_=$SERVICE_USER \
     -D_DESCRIPTION_="$DESCRIPTION" \
     -D_CONFIG_REPO_=$CONFIG_REPO \
-    -D_CONFIG_NAME_=$CONFIG_NAME \
-    -D_CONFIG_USER_=$CONFIG_USER \
-    -D_CONFIG_PASS_=$CONFIG_PASS \
-    -D_CONFIG_VERSION_=$CONFIG_VERSION \
+    -D_CONFIG_BASELINE_=$CONFIG_BASELINE \
     -D_CONFIG_GROUP_=$CONFIG_GROUP \
+    -D_HOST_PREFIX_=$HOST_PREFIX \
+    -D_PROXY_PORT_=$PROXY_PORT \
     -D_TELNET_PORT_=$TELNET_PORT \
     -D_METRICS_PORT_=$METRICS_PORT \
     $1 \
@@ -79,58 +98,52 @@ function process_template() {
 
 
 echo Creating custom build script
+process_template $script_home/build-_SERVICE_NAME_.sh.m4 $build_home/build-$SERVICE_NAME.sh
+chmod +x $build_home/build-$SERVICE_NAME.sh
+process_template $script_home/build.sh.m4 $service_home/build.sh
+chmod +x $service_home/build.sh
 
-process_template build.sh.m4 $build_home/build-$IMAGE_NAME.sh
-
-chmod +x $build_home/build-$IMAGE_NAME.sh
-
-$build_home/build-$IMAGE_NAME.sh
-
-mv $build_home/$IMAGE_NAME.* $service_home
-
-cp pharo-ctl.sh $service_home
+cp $vm_home/Pharo*.sources $service_home
+cp $script_home/pharo-ctl.sh $service_home
 
 
 echo Creating custom run/startup script
-
-process_template run.st.m4 $service_home/run-$SERVICE_NAME.st
-
+process_template $script_home/run.st.m4 $service_home/run-$SERVICE_NAME.st
 
 echo Creating custom REPL script
-
-process_template repl.sh.m4 $service_home/repl.sh
-
+process_template $script_home/repl.sh.m4 $service_home/repl.sh
 chmod +x $service_home/repl.sh
 
-
-echo Creating custom init.d script
-
-process_template init.d.m4 $service_home/init.d.script
-
-chmod +x $service_home/init.d.script
-
-
 echo Creating custom systemd.service script
+process_template $script_home/systemd.service.m4 $service_home/systemd.service.script
 
-process_template systemd.service.m4 $service_home/systemd.service.script
-
+echo Creating custom nginx site configuration
+process_template $script_home/nginx-site.m4 $service_home/nginx-site
 
 echo Creating custom monit services
-
-process_template monit-service-init.d.m4 $service_home/monit-service-init.d
-process_template monit-service-systemd.m4 $service_home/monit-service-systemd
+process_template $script_home/monit-service-systemd.m4 $service_home/monit-service-systemd
 
 echo Done
 
-echo To install the init.d script do
-echo sudo cp $service_home/init.d.script /etc/init.d/$SERVICE_NAME
-echo sudo update-rc.d $SERVICE_NAME defaults
-echo To install the monit service check for init.d do
-echo sudo cp $service_home/monit-service-init.d /etc/monit/conf.d/$SERVICE_NAME
+process_template $script_home/systemd_install.sh.m4 $service_home/systemd_install.sh
+chmod +x $service_home/systemd_install.sh
+process_template $script_home/systemd_remove.sh.m4 $service_home/systemd_remove.sh
+chmod +x $service_home/systemd_remove.sh
+
+echo To install $SERVICE_NAME as a systemd service, run $service_home/systemd_install.sh
 echo ""
-echo To install the systemd.service script do
-echo sudo cp $service_home/systemd.service.script /etc/systemd/system/$SERVICE_NAME.service
-echo sudo systemctl daemon-reload
-echo sudo systemctl enable $SERVICE_NAME
-echo To install the monit service check for systemd do
+echo To install/enable the nginx site do
+echo sudo ln -s $service_home/nginx-site /etc/nginx/sites-enabled/$SERVICE_NAME
+echo sudo mkdir -p /var/www/$SERVICE_NAME/logs
+echo sudo ln -s /home/pharo/pharo/$SERVICE_NAME/pharo-local/iceberg/ErikOnBike/CP-ClientEnvironment/html
+echo sudo certbot run --non-interactive --nginx -d $SERVICE_NAME.objectguild.com
+echo ""
+
+if [ -z /etc/nginx/conf.d/proxy_websockets.conf ];
+then
+    echo Adding nginx proxy websockets configuration
+    sudo cp $script_home/proxy_websockets.conf /etc/nginx/conf.d/
+fi
+
+echo To install the monit service check do
 echo sudo cp $service_home/monit-service-systemd /etc/monit/conf.d/$SERVICE_NAME
